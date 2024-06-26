@@ -29,6 +29,8 @@ struct Pong
 
     enum PongState state;
 
+    int player_IA;
+
     int player1_score;
     int player2_score;
     int serving_player;
@@ -39,8 +41,9 @@ struct Pong
 
 void init_pong(struct Pong* pong, struct Sounds* sounds);
 
-void handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state);
-void IA(struct Pong* pong);
+int handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state);
+
+void player_IA(struct Pong* pong);
 
 void update_pong(struct Pong* pong, double dt);
 

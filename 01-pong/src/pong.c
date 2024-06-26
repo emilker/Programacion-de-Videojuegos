@@ -31,53 +31,52 @@ void init_pong(struct Pong* pong, struct Sounds* sounds)
     srand(time(NULL));
 }
 
-void IA(struct Pong* pong)
+void player_IA(struct Pong* pong)
 {
     if (pong->state == PLAY)
     {       //codigo para que se mueva la IA
-        if(( (int)pong->ball.x > (int)(TABLE_WIDTH / 2 - BALL_SIZE / 2) ) && (pong->ball.vx > 0) )
-        {
-            if ((int)(pong->player2.y) < (int)(pong->ball.y)  && (int)(pong->ball.y) < (int)(pong->player2.y + PADDLE_HEIGHT))
+        if(( pong->ball.x > (TABLE_WIDTH / 2 - BALL_SIZE / 2) ) && (pong->ball.vx > 0) )
+        {    
+            if ((pong->player2.y) < (pong->ball.y)  && (pong->ball.y) < (pong->player2.y + PADDLE_HEIGHT))
             {
                 pong->player2.vy = 0;  
             }
-            else if ((int)pong->player2.y < (int)pong->ball.y)
+            else if (pong->player2.y < pong->ball.y)
             {
                 pong->player2.vy = PADDLE_SPEED;
             }
-            else if ((int)(pong->player2.y + PADDLE_HEIGHT)  > (int)(pong->ball.y + BALL_SIZE)  )
+            else if (pong->player2.y  > pong->ball.y)
             {
                 pong->player2.vy = -PADDLE_SPEED;   
+            }
+            else
+            {
+                pong->player2.vy = 0;    
             }
     
         }
-        // codigo para que la pelota despues de golpearla vuelva al centro de la mesa
-        if ((pong->ball.vx < 0))
+        else
         {
-            if ((int)pong->player2.y < (int)(TABLE_HEIGHT / 2 - BALL_SIZE / 2))
-            {
-                pong->player2.vy = PADDLE_SPEED;
-            }
-            else if ((int)pong->player2.y > (int)(TABLE_HEIGHT / 2 - BALL_SIZE / 2))
-            {
-                pong->player2.vy = -PADDLE_SPEED;   
-            }
-            if(pong->player2.y < (int)(TABLE_HEIGHT / 2 - BALL_SIZE / 2)  && (int)(TABLE_HEIGHT / 2 - BALL_SIZE / 2) < (int)(pong->player2.y +PADDLE_HEIGHT))
-            {
-                pong->player2.vy = 0;  
-            }
+            pong->player2.vy = 0;
         }
     }
 }
 
-void handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state)
+int handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state)
 {
     if (pong->state == START)
     {
-        if (al_key_down(state, ALLEGRO_KEY_ENTER))
+        if (al_key_down(state, ALLEGRO_KEY_X))
         {
             pong->state = SERVE;
             pong->serving_player = rand() % 2 + 1;
+            pong->player_IA = 0;
+        }
+        else if (al_key_down(state, ALLEGRO_KEY_Z))
+        {
+            pong->state = SERVE;
+            pong->serving_player = rand() % 2 + 1;
+            pong->player_IA = 1;
         }
     }
     else if (pong->state == SERVE)
@@ -110,6 +109,27 @@ void handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state)
         {
             pong->player1.vy = 0;
         }
+
+        if(pong->player_IA != 1)
+        {
+            if (al_key_down(state, ALLEGRO_KEY_DOWN))
+            {
+                pong->player2.vy = PADDLE_SPEED;
+            }
+            else if (al_key_down(state, ALLEGRO_KEY_UP))
+            {
+                pong->player2.vy = -PADDLE_SPEED;
+            }
+            else
+            {
+                pong->player2.vy = 0;
+            }
+            return pong->player_IA;
+        }
+        else
+        {
+            return pong->player_IA;
+        }
         
     }
     else
@@ -132,6 +152,8 @@ void handle_input_pong(struct Pong* pong, ALLEGRO_KEYBOARD_STATE* state)
             }
         }
     }
+
+    return pong->player_IA;
 }
 
 void update_pong(struct Pong* pong, double dt)
@@ -245,23 +267,25 @@ void render_pong(struct Pong pong, struct Fonts fonts)
 
     char score[3];
     sprintf(score, "%d", pong.player1_score);
-    al_draw_text(fonts.score_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2 - 50, TABLE_HEIGHT / 6, ALLEGRO_ALIGN_CENTER, score);
+    al_draw_text(fonts.score_font, al_map_rgb(242, 80, 42), TABLE_WIDTH / 2 - 50, TABLE_HEIGHT / 6, ALLEGRO_ALIGN_CENTER, score);
     sprintf(score, "%d", pong.player2_score);
-    al_draw_text(fonts.score_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2 + 50, TABLE_HEIGHT / 6, ALLEGRO_ALIGN_CENTER, score);
+    al_draw_text(fonts.score_font, al_map_rgb(242, 80, 42), TABLE_WIDTH / 2 + 50, TABLE_HEIGHT / 6, ALLEGRO_ALIGN_CENTER, score);
 
     if (pong.state == START)
     {
-        al_draw_text(fonts.large_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press enter to start");
+        al_draw_text(fonts.large_font, al_map_rgb(236, 235, 81), TABLE_WIDTH / 2, TABLE_HEIGHT / 3, ALLEGRO_ALIGN_CENTER, "Press X: 2 Players");
+        al_draw_text(fonts.large_font, al_map_rgb(236, 235, 81), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press Z: Player and IA");
+        
     }
     else if (pong.state == SERVE)
     {
-        al_draw_text(fonts.large_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press enter to serve");
+        al_draw_text(fonts.large_font, al_map_rgb(236, 235, 81), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press enter to serve");
     }
     else if (pong.state == DONE)
     {
         char winner_message[14];
         sprintf(winner_message, "Player %d won!", pong.winning_player);
-        al_draw_text(fonts.large_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2, TABLE_HEIGHT / 3, ALLEGRO_ALIGN_CENTER, winner_message);
-        al_draw_text(fonts.large_font, al_map_rgb(255, 255, 255), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press enter to restart");
+        al_draw_text(fonts.large_font, al_map_rgb(236, 235, 81), TABLE_WIDTH / 2, TABLE_HEIGHT / 3, ALLEGRO_ALIGN_CENTER, winner_message);
+        al_draw_text(fonts.large_font, al_map_rgb(236, 235, 81), TABLE_WIDTH / 2, TABLE_HEIGHT / 2, ALLEGRO_ALIGN_CENTER, "Press enter to restart");
     }
 }
