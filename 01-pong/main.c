@@ -57,7 +57,7 @@ int main()
     init_pong(&pong, &sounds);
 
     float last_frame_time = al_get_time();
-    ALLEGRO_KEYBOARD_STATE keyboard_state;
+    
 
     int IA = 0;
     while (true)
@@ -74,6 +74,7 @@ int main()
         }
         else if (event.type == ALLEGRO_EVENT_KEY_DOWN || event.type == ALLEGRO_EVENT_KEY_UP)
         {
+            ALLEGRO_KEYBOARD_STATE keyboard_state;
             al_get_keyboard_state(&keyboard_state);
             IA = handle_input_pong(&pong, &keyboard_state);
         }
