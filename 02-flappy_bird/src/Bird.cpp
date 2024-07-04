@@ -38,6 +38,19 @@ void Bird::jump() noexcept
     }
 }
 
+void Bird::move(const sf::Event& KEY) noexcept
+{
+    if (KEY.key.code == sf::Keyboard::D)
+    {
+        move_right = true;
+    }   
+
+    if (KEY.key.code == sf::Keyboard::A)
+    {
+        move_left = true;
+    }   
+}
+
 void Bird::update(float dt) noexcept
 {
     vy += Settings::GRAVITY * dt;
@@ -49,7 +62,20 @@ void Bird::update(float dt) noexcept
         jumping = false;
     }
 
+    if (move_left)
+    {
+        x += -Settings::HORIZONTAL_MOVEMENT;
+        move_left = false;
+    }
+    
+    if (move_right)
+    {
+        x += Settings::HORIZONTAL_MOVEMENT;
+        move_right = false;
+    }   
+
     y += vy * dt;
+
     sprite.setPosition(x, y);
 }
 
