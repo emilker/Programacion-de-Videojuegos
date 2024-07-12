@@ -68,6 +68,14 @@ void Settings::load_textures()
     }
 
     Settings::textures["Log"] = texture;
+
+
+    if (!texture.loadFromFile(Settings::TEXTURES_PATH / "Caja.png"))
+    {
+        throw std::runtime_error{"Error loading texture assets/graphics/Caja.png"};
+    }
+
+    Settings::textures["PowerUp"] = texture;
 }
 
 void Settings::load_sounds()

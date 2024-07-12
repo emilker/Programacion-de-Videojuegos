@@ -33,6 +33,8 @@ struct Settings
     static constexpr int VIRTUAL_HEIGHT{288};
     static constexpr float BIRD_WIDTH{39.f};
     static constexpr float BIRD_HEIGHT{28.f};
+    static constexpr float POWERUP_WIDTH{36.f};
+    static constexpr float POWERUP_HEIGHT{34.f};
     static constexpr float LOG_WIDTH{70.f};
     static constexpr float LOG_HEIGHT{288.f};
     static constexpr float LOGS_GAP{90.f};
@@ -43,6 +45,7 @@ struct Settings
     static constexpr float GRAVITY{980.f};
     static constexpr float JUMP_TAKEOFF_SPEED{GRAVITY / 6.f};
     static constexpr float TIME_TO_SPAWN_LOGS{1.5f};
+    static constexpr float TIME_TO_SPAWN_POWERUP{30.5f};
     static constexpr int MEDIUM_TEXT_SIZE{18};
     static constexpr int HUGE_TEXT_SIZE{56};
     static constexpr int FLAPPY_TEXT_SIZE{28};
