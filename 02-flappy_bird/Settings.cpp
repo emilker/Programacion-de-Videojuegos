@@ -29,6 +29,7 @@ std::unordered_map<std::string, sf::Sound> Settings::sounds{};
 std::unordered_map<std::string, sf::Font> Settings::fonts{};
 
 sf::Music Settings::music{};
+sf::Music Settings::music_2{};
 
 void Settings::init()
 {
@@ -126,6 +127,11 @@ void Settings::load_sounds()
     if (!Settings::music.openFromFile(Settings::SOUNDS_PATH / "marios_way.ogg"))
     {
         throw std::runtime_error{"Error loading music sounds/marios_way.ogg"};
+    }
+
+     if (!Settings::music_2.openFromFile(Settings::SOUNDS_PATH / "tense_drive.ogg"))
+    {
+        throw std::runtime_error{"Error loading music sounds/tense_drive.ogg"};
     }
 }
 
