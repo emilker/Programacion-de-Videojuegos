@@ -77,6 +77,13 @@ void Settings::load_textures()
     }
 
     Settings::textures["PowerUp"] = texture;
+
+    if (!texture.loadFromFile(Settings::TEXTURES_PATH / "bird_2.png"))
+    {
+        throw std::runtime_error{"Error loading texture assets/graphics/bird_2.png"};
+    }
+
+    Settings::textures["bird_2"] = texture;
 }
 
 void Settings::load_sounds()
