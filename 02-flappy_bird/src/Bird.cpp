@@ -10,11 +10,13 @@
 
 #include <Settings.hpp>
 #include <src/Bird.hpp>
+#include "Bird.hpp"
 
 Bird::Bird(float _x, float _y, float w, float h) noexcept
     : x{_x}, y{_y}, width{w}, height{h}, vy{0.f}, sprite{Settings::textures["bird"]}
 {
     sprite.setPosition(x, y);
+   
 }
 
 void Bird::reset(float _x, float _y) noexcept
@@ -25,6 +27,18 @@ void Bird::reset(float _x, float _y) noexcept
     sprite.setPosition(x, y);
 }
 
+void Bird::cambiar_texturer() noexcept
+{
+
+    if (sprite.getTexture() == &Settings::textures["bird"]) {
+        
+        sprite.setTexture(Settings::textures["bird_2"]);
+    } else 
+    {
+        sprite.setTexture(Settings::textures["bird"]);
+    }
+    
+}
 sf::FloatRect Bird::get_collision_rect() const noexcept
 {
     return sf::FloatRect{x, y, width, height};

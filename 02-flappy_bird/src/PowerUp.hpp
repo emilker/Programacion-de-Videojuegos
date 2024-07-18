@@ -5,33 +5,23 @@
     Author: Alejandro Mujica
     alejandro.j.mujic4@gmail.com
 
-    This file contains the declaration of the class Bird.
+    This file contains the declaration of the class PowerUp.
 */
 
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
-class Bird
+// bool crear
+class PowerUp
 {
 public:
-    Bird(float _x, float _y, float w, float h) noexcept;
-
-    Bird(const Bird&) = delete;
-
-    Bird& operator = (Bird) = delete;
-
-    void reset(float _x, float _y) noexcept;
-
-    void cambiar_texturer() noexcept;
-
+    
+    PowerUp(float _x, float _y, float w, float h) noexcept;
 
     sf::FloatRect get_collision_rect() const noexcept;
 
-    void jump() noexcept;
-
     void update(float dt) noexcept;
-
+   
     void render(sf::RenderTarget& target) const noexcept;
 
 private:
@@ -39,8 +29,6 @@ private:
     float y;
     float width;
     float height;
-    float vy;
+    bool crear;
     sf::Sprite sprite;
-    bool jumping{false};
-
 };
