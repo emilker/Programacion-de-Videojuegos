@@ -29,7 +29,9 @@ void TitleScreenState::handle_inputs(const sf::Event& event) noexcept
 
 void TitleScreenState::update(float dt) noexcept
 {
+ //s   world->PowerUp(false);
     world->update(dt);
+    
 }
 
 void TitleScreenState::render(sf::RenderTarget& target) const noexcept 

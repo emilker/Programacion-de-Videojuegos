@@ -12,18 +12,26 @@
 #include <src/text_utilities.hpp>
 #include <src/states/StateMachine.hpp>
 #include <src/states/PlayingState.hpp>
+#include "PlayingState.hpp"
 
 PlayingState::PlayingState(StateMachine* sm) noexcept
     : BaseState{sm}
 {
-
+ 
 }
 
-void PlayingState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _bird) noexcept
+void PlayingState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _bird, bool log, bool _powerup, int _score, float _time) noexcept
 {
     world = _world;
-    world->reset(true);
-    
+    score = _score;
+    powerup = _powerup;
+    time = _time;
+
+    if(log)
+    {
+        world->reset(true);
+    }
+   
     if (_bird == nullptr)
     {
         bird = std::make_shared<Bird>(
@@ -34,7 +42,6 @@ void PlayingState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _b
     else
     {
         bird = _bird;
-        bird->reset(Settings::VIRTUAL_WIDTH / 2 - Settings::BIRD_WIDTH / 2, Settings::VIRTUAL_HEIGHT / 2 - Settings::BIRD_HEIGHT / 2);
     }
 }
 
@@ -44,19 +51,46 @@ void PlayingState::handle_inputs(const sf::Event& event) noexcept
     {
         bird->jump();
     }
+
+    if (event.key.code == sf::Keyboard::Enter)
+    {
+        state_machine->change_state("pause", world, bird , false, powerup, score, time);
+    }
 }
 
 void PlayingState::update(float dt) noexcept
 {
     bird->update(dt);
-    world->update(dt);
-
-    if (world->collides(bird->get_collision_rect()))
+    world->update(dt);  
+    world->generate_powerup(true);
+    
+    if (world->collides(bird->get_collision_rect()) && (!powerup))
     {
         Settings::sounds["explosion"].play();
         Settings::sounds["hurt"].play();
+
+        bird->reset(Settings::VIRTUAL_WIDTH / 2 - Settings::BIRD_WIDTH / 2, Settings::VIRTUAL_HEIGHT / 2 - Settings::BIRD_HEIGHT / 2);
+        world->reset(true);
+        
         state_machine->change_state("count_down", world, bird);
-        return;
+    }
+
+    if (world->collides_powerup(bird->get_collision_rect()))
+    {
+        powerup = true;
+
+        Settings::music_2.setLoop(true);
+        Settings::music.stop();
+        Settings::music_2.play();
+
+        bird->cambiar_texturer();
+        world->generate_powerup(false);
+        
+    }
+
+    if (powerup)
+    {
+        timer(dt);
     }
 
     if (world->update_scored(bird->get_collision_rect()))
@@ -66,9 +100,32 @@ void PlayingState::update(float dt) noexcept
     }
 }
 
-void PlayingState::render(sf::RenderTarget& target) const noexcept
+void PlayingState::render(sf::RenderTarget &target) const noexcept
 {
     world->render(target);
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
+    
+    if (powerup)
+    {
+        render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);
+    }
 }
+
+void PlayingState::timer(float dt) noexcept
+{
+    time += -dt;
+
+    if (time < 0)
+    {
+        Settings::music_2.stop();
+        Settings::music.play();
+
+        bird->cambiar_texturer();
+        
+        powerup = false;
+        time = 20;
+    }
+}
+    
+    
