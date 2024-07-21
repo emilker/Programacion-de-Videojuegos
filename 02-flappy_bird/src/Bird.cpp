@@ -27,13 +27,14 @@ void Bird::reset(float _x, float _y) noexcept
     sprite.setPosition(x, y);
 }
 
-void Bird::cambiar_texturer() noexcept
+void Bird::change_texture() noexcept
 {
 
-    if (sprite.getTexture() == &Settings::textures["bird"]) {
-        
+    if (sprite.getTexture() == &Settings::textures["bird"]) 
+    {    
         sprite.setTexture(Settings::textures["bird_2"]);
-    } else 
+    } 
+    else 
     {
         sprite.setTexture(Settings::textures["bird"]);
     }

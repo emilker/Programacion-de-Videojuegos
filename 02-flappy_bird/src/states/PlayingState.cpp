@@ -83,7 +83,7 @@ void PlayingState::update(float dt) noexcept
         Settings::music.stop();
         Settings::music_2.play();
 
-        bird->cambiar_texturer();
+        bird->change_texture();
         world->generate_powerup(false);
         
     }
@@ -121,7 +121,7 @@ void PlayingState::timer(float dt) noexcept
         Settings::music_2.stop();
         Settings::music.play();
 
-        bird->cambiar_texturer();
+        bird->change_texture();
         
         powerup = false;
         time = 20;
