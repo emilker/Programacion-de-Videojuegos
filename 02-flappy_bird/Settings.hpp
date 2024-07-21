@@ -47,7 +47,7 @@ struct Settings
     static constexpr int HUGE_TEXT_SIZE{56};
     static constexpr int FLAPPY_TEXT_SIZE{28};
 
-    static constexpr float HORIZONTAL_MOVEMENT{JUMP_TAKEOFF_SPEED / 9};
+    static constexpr float HORIZONTAL_MOVEMENT{100.f};
     
     static std::unordered_map<std::string, sf::Texture> textures;
     static std::unordered_map<std::string, sf::SoundBuffer> sound_buffers;

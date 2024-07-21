@@ -27,7 +27,7 @@ public:
 
     void jump() noexcept;
 
-    void move(const sf::Event&) noexcept;
+    void move(const float) noexcept;
 
     void update(float dt) noexcept;
 
@@ -39,6 +39,7 @@ private:
     float width;
     float height;
     float vy;
+    float vx;
     sf::Sprite sprite;
     bool jumping{false};
     bool move_left{false};

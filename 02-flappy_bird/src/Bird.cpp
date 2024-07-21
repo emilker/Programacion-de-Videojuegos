@@ -12,7 +12,7 @@
 #include <src/Bird.hpp>
 
 Bird::Bird(float _x, float _y, float w, float h) noexcept
-    : x{_x}, y{_y}, width{w}, height{h}, vy{0.f}, sprite{Settings::textures["bird"]}
+    : x{_x}, y{_y}, width{w}, height{h}, vy{0.f}, vx{0.f},sprite{Settings::textures["bird"]}
 {
     sprite.setPosition(x, y);
 }
@@ -22,6 +22,7 @@ void Bird::reset(float _x, float _y) noexcept
     x = _x;
     y = _y;
     vy = 0.f;
+    vx = 0.f;
     sprite.setPosition(x, y);
 }
 
@@ -38,17 +39,9 @@ void Bird::jump() noexcept
     }
 }
 
-void Bird::move(const sf::Event& KEY) noexcept
+void Bird::move(float _vx) noexcept
 {
-    if (KEY.key.code == sf::Keyboard::D)
-    {
-        move_right = true;
-    }   
-
-    if (KEY.key.code == sf::Keyboard::A)
-    {
-        move_left = true;
-    }   
+       vx = _vx;
 }
 
 void Bird::update(float dt) noexcept
@@ -62,19 +55,8 @@ void Bird::update(float dt) noexcept
         jumping = false;
     }
 
-    if (move_left)
-    {
-        x += -Settings::HORIZONTAL_MOVEMENT;
-        move_left = false;
-    }
-    
-    if (move_right)
-    {
-        x += Settings::HORIZONTAL_MOVEMENT;
-        move_right = false;
-    }   
-
     y += vy * dt;
+    x += vx * dt;
 
     sprite.setPosition(x, y);
 }
