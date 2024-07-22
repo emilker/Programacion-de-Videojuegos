@@ -17,9 +17,11 @@ class Log
 public:
     Log(float _x, float _y, bool inverted) noexcept;
 
+    float get_y() const noexcept;
+
     sf::FloatRect get_collision_rect() const noexcept;
 
-    void update(float _x) noexcept;
+    void update(float _x, float _y) noexcept;
 
     void render(sf::RenderTarget& target) const noexcept;
 

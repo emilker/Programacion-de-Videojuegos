@@ -11,13 +11,15 @@
 #include <Settings.hpp>
 #include <src/World.hpp>
 
+#include <src/game_modes/GameMode.hpp>
+
 World::World(bool _generate_logs) noexcept
     : generate_logs{_generate_logs}, background{Settings::textures["background"]}, ground{Settings::textures["ground"]},
-      logs{}, rng{std::default_random_engine{}()}
+      logs{}
 {
     ground.setPosition(0, Settings::VIRTUAL_HEIGHT - Settings::GROUND_HEIGHT);
     std::uniform_int_distribution<int> dist(0, 80);
-    last_log_y = -Settings::LOG_HEIGHT + dist(rng) + 20;
+    last_log_y = -Settings::LOG_HEIGHT + dist(Settings::RNG) + 20;
 }
 
 void World::reset(bool _generate_logs) noexcept
@@ -67,16 +69,18 @@ void World::update(float dt) noexcept
     {
         logs_spawn_timer += dt;
 
-        if (logs_spawn_timer >= Settings::TIME_TO_SPAWN_LOGS)
+        if (logs_spawn_timer >= time_change_between_logs)
         {
             logs_spawn_timer = 0.f;
 
+            time_change_between_logs = Settings::GAME_MODE->time_to_spawn_logs();
+
             std::uniform_int_distribution<int> dist{-20, 20};
-            float y = std::max(-Settings::LOG_HEIGHT + 10, std::min(last_log_y + dist(rng), Settings::VIRTUAL_HEIGHT + 90 - Settings::LOG_HEIGHT));
+            float y = std::max(-Settings::LOG_HEIGHT + 10, std::min(last_log_y + dist(Settings::RNG), Settings::VIRTUAL_HEIGHT + 90 - Settings::LOG_HEIGHT));
 
             last_log_y = y;
 
-            logs.push_back(log_factory.create(Settings::VIRTUAL_WIDTH, y));
+            logs.push_back(log_factory.create(Settings::VIRTUAL_WIDTH, y, Settings::GAME_MODE->should_close_log_pair()));
         }
     }
 

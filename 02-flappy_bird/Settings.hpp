@@ -14,14 +14,19 @@
 #include <filesystem>
 #include <string>
 #include <unordered_map>
+#include <random>
 
 namespace fs = std::filesystem;
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+#include <src/game_modes/GameMode.hpp>
+
 struct Settings
 {
+    static std::mt19937 RNG;
+
     static const fs::path ASSETS_PATH;
     static const fs::path TEXTURES_PATH;
     static const fs::path SOUNDS_PATH;
@@ -47,12 +52,15 @@ struct Settings
     static constexpr int HUGE_TEXT_SIZE{56};
     static constexpr int FLAPPY_TEXT_SIZE{28};
 
-    static constexpr float HORIZONTAL_MOVEMENT{100.f};
+    static constexpr float HORIZONTAL_MOVEMENT{200.f};
+    static constexpr float LOG_MOVEMENT{25.f};
     
     static std::unordered_map<std::string, sf::Texture> textures;
     static std::unordered_map<std::string, sf::SoundBuffer> sound_buffers;
     static std::unordered_map<std::string, sf::Sound> sounds;
     static std::unordered_map<std::string, sf::Font> fonts;
+
+    static std::shared_ptr<GameMode> GAME_MODE;
 
     static sf::Music music;
 

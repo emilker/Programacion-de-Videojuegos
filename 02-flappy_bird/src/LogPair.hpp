@@ -16,7 +16,7 @@
 class LogPair
 {
 public:
-    LogPair(float _x, float _y) noexcept;
+    LogPair(float _x, float _y, bool _should_close) noexcept;
 
     bool collides(const sf::FloatRect& rect) const noexcept;
 
@@ -28,11 +28,13 @@ public:
 
     bool update_scored(const sf::FloatRect& rect) noexcept;
 
-    void reset(float _x, float _y) noexcept;
+    void reset(float _x, float _y, bool _should_close) noexcept;
 
 private:
     float x;
     float y;
+    bool should_close;
+    float dy_sign{1.f};
     Log top;
     Log bottom;
 

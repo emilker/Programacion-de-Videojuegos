@@ -53,5 +53,6 @@ private:
     std::mt19937 rng;
 
     float logs_spawn_timer{0.f};
+    float time_change_between_logs{Settings::TIME_TO_SPAWN_LOGS};
     float last_log_y{0.f};
 };
