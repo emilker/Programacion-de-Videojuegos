@@ -23,7 +23,7 @@ public:
 
     void reset(float _x, float _y) noexcept;
 
-    void change_texture() noexcept;
+    void change_texturer() noexcept;
 
 
     sf::FloatRect get_collision_rect() const noexcept;

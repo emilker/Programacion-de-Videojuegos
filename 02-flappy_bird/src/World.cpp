@@ -23,7 +23,6 @@ World::World(bool _generate_logs) noexcept
     last_log_y = -Settings::LOG_HEIGHT + dist(rng) + 20;
 
     std::srand(static_cast<unsigned int>(std::time(0)));
-    
 }
 
 void World::reset(bool _generate_logs) noexcept
@@ -62,14 +61,12 @@ bool World::collides(const sf::FloatRect& rect) const noexcept
 
 bool World::collides_powerup(const sf::FloatRect &rect)  noexcept
 { 
-    
     rec_powerup = sf::FloatRect(powerup_x,powerup_y,Settings::POWERUP_WIDTH,Settings::POWERUP_HEIGHT);
     
     if(rec_powerup.intersects(rect))
     { 
         return true;
     }    
-    
     return false;
 }
 
@@ -100,20 +97,22 @@ void World::update(float dt) noexcept
 
             last_log_y = y;
 
-            logs.push_back(log_factory.create(Settings::VIRTUAL_WIDTH, y));
-            
+            logs.push_back(log_factory.create(Settings::VIRTUAL_WIDTH, y)); 
         }
     }
 
     if (generate_PowerUp)
     {
         create_PowerUp(dt);
-    }else
+    }
+    else
     {
         powerup_spawn_timer = 0.f;
         powerup_y = 0;
         powerup_x = 0 ;        
     }
+
+    powerup.setPosition(powerup_x, powerup_y);
 
     background_x += -Settings::BACK_SCROLL_SPEED * dt;
 
@@ -158,7 +157,6 @@ void World::create_PowerUp(float dt) noexcept
         powerup_spawn_timer = 0.f;
 
         powerup_y = std::rand() % (240 - 60 + 1) + 60;
-
         powerup_x = Settings::VIRTUAL_WIDTH ;
            
         rec_powerup = sf::FloatRect(powerup_x, powerup_y,Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);
@@ -168,12 +166,9 @@ void World::create_PowerUp(float dt) noexcept
             powerup_x += Settings::LOG_WIDTH;
             rec_powerup = sf::FloatRect(powerup_x, powerup_y, Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);
         }
-
-        powerup.setPosition(powerup_x, powerup_y );
     }
 
     powerup_x += -Settings::MAIN_SCROLL_SPEED * dt;
-    powerup.setPosition(powerup_x, powerup_y); 
 }
 
 void World::render(sf::RenderTarget& target) const noexcept
@@ -186,9 +181,9 @@ void World::render(sf::RenderTarget& target) const noexcept
     }
 
     target.draw(ground);
-
-    sf::Vector2f position = powerup.getPosition();
     
+    sf::Vector2f position = powerup.getPosition();
+
     if((position.x != 0) && (position.y != 0) )
     {
         target.draw(powerup);

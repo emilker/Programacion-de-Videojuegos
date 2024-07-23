@@ -27,19 +27,19 @@ void Bird::reset(float _x, float _y) noexcept
     sprite.setPosition(x, y);
 }
 
-void Bird::change_texture() noexcept
+void Bird::change_texturer() noexcept
 {
 
-    if (sprite.getTexture() == &Settings::textures["bird"]) 
-    {    
+    if (sprite.getTexture() == &Settings::textures["bird"]) {
+        
         sprite.setTexture(Settings::textures["bird_2"]);
-    } 
-    else 
+    } else 
     {
         sprite.setTexture(Settings::textures["bird"]);
     }
     
 }
+
 sf::FloatRect Bird::get_collision_rect() const noexcept
 {
     return sf::FloatRect{x, y, width, height};

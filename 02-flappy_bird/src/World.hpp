@@ -18,7 +18,6 @@
 
 #include <src/Factory.hpp>
 #include <src/LogPair.hpp>
-#include <src/PowerUp.hpp>
 
 class World
 {
@@ -48,7 +47,7 @@ public:
     
 private:
     bool generate_logs;
-    bool generate_PowerUp{false};
+    bool generate_PowerUp;
 
     sf::Sprite background;
     sf::Sprite ground;
@@ -61,18 +60,14 @@ private:
 
     Factory<LogPair> log_factory;
 
-    Factory<PowerUp> PowerUp_factory;
-
     std::list<std::shared_ptr<LogPair>> logs;
 
     std::mt19937 rng;
 
     float logs_spawn_timer{0.f};
+    float powerup_spawn_timer{0.f};
     float last_log_y{0.f};
 
-    float _time{0};
-
     sf::FloatRect rec_powerup;
-
-    float powerup_spawn_timer{0.f};
+ 
 };
