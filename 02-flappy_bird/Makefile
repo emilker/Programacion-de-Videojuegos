@@ -1,10 +1,10 @@
-CXX = clang++ -std=c++17
+CXX = clang++ -std=c++17 
 
 INCLUDE = -I.
 
 BUILD_DIR = build
 
-OBJ_RULES = text_utilities.o Settings.o Game.o Bird.o Log.o LogPair.o PowerUp.o World.o StateMachine.o TitleScreenState.o CountDownState.o PlayingState.o PauseState.o
+OBJ_RULES = text_utilities.o Settings.o Game.o Bird.o Log.o LogPair.o World.o StateMachine.o TitleScreenState.o CountDownState.o PlayingState.o PauseState.o
 
 LIBS = -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system $(BUILD_DIR)/*.o
 
@@ -27,9 +27,6 @@ Log.o: src/Log.cpp src/Log.hpp
 	$(CXX) -c $(INCLUDE) $< -o $(BUILD_DIR)/$@
 
 LogPair.o: src/LogPair.cpp src/LogPair.hpp
-	$(CXX) -c $(INCLUDE) $< -o $(BUILD_DIR)/$@
-
-PowerUp.o: src/PowerUp.cpp src/PowerUp.hpp
 	$(CXX) -c $(INCLUDE) $< -o $(BUILD_DIR)/$@
 
 World.o: src/World.cpp src/World.hpp
