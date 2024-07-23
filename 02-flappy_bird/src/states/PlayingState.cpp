@@ -29,7 +29,12 @@ void PlayingState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _b
 
     if(log)
     {
-        world->reset(true);
+        world->reset(true);/////sdfsdgfdsgfsdfsdfsad
+    }
+
+    if(powerup)
+    {
+        world->generate_powerup(true);
     }
    
     if (_bird == nullptr)
@@ -60,11 +65,11 @@ void PlayingState::handle_inputs(const sf::Event& event) noexcept
 
 void PlayingState::update(float dt) noexcept
 {
+  
     bird->update(dt);
     world->update(dt);  
-    world->generate_powerup(true);
     
-    if (world->collides(bird->get_collision_rect()) && (!powerup))
+    if (world->collides(bird->get_collision_rect()) && (powerup))
     {
         Settings::sounds["explosion"].play();
         Settings::sounds["hurt"].play();
@@ -76,19 +81,16 @@ void PlayingState::update(float dt) noexcept
     }
 
     if (world->collides_powerup(bird->get_collision_rect()))
-    {
-        powerup = true;
-
-        Settings::music_2.setLoop(true);
+    { 
+        powerup = false;
         Settings::music.stop();
+        Settings::music_2.setLoop(true);
         Settings::music_2.play();
-
-        bird->change_texture();
         world->generate_powerup(false);
-        
+        bird->change_texturer();
     }
 
-    if (powerup)
+    if (!powerup)
     {
         timer(dt);
     }
@@ -106,7 +108,7 @@ void PlayingState::render(sf::RenderTarget &target) const noexcept
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
     
-    if (powerup)
+    if (!powerup)
     {
         render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);
     }
@@ -120,12 +122,9 @@ void PlayingState::timer(float dt) noexcept
     {
         Settings::music_2.stop();
         Settings::music.play();
-
-        bird->change_texture();
-        
-        powerup = false;
-        time = 20;
+        world->generate_powerup(true);
+        bird->change_texturer();
+        powerup = true;
+        time = 20.f;
     }
 }
-    
-    

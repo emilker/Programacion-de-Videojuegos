@@ -12,6 +12,7 @@
 #include <src/text_utilities.hpp>
 #include <src/states/StateMachine.hpp>
 #include <src/states/PauseState.hpp>
+#include "PauseState.hpp"
 
 PauseState::PauseState(StateMachine* sm) noexcept
     : BaseState{sm}
@@ -37,12 +38,13 @@ void PauseState::handle_inputs(const sf::Event& event) noexcept
     }
 }
 
-void PauseState::render(sf::RenderTarget& target) const noexcept
+void PauseState::render(sf::RenderTarget &target) const noexcept
 {
     world->render(target);
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
-    if (powerup)
+    render_text(target, Settings::VIRTUAL_WIDTH / 2, 2 * Settings::VIRTUAL_HEIGHT / 3, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
+    if (!powerup)
     {
         render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);
     }
