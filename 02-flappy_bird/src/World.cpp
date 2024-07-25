@@ -11,8 +11,6 @@
 #include <Settings.hpp>
 #include <src/World.hpp>
 #include "World.hpp"
-#include <cstdlib>
-#include <ctime>
 
 World::World(bool _generate_logs) noexcept
     : generate_logs{_generate_logs}, background{Settings::textures["background"]}, ground{Settings::textures["ground"]},powerup{Settings::textures["PowerUp"]},
@@ -21,8 +19,7 @@ World::World(bool _generate_logs) noexcept
     ground.setPosition(0, Settings::VIRTUAL_HEIGHT - Settings::GROUND_HEIGHT);
     std::uniform_int_distribution<int> dist(0, 80);
     last_log_y = -Settings::LOG_HEIGHT + dist(rng) + 20;
-
-    std::srand(static_cast<unsigned int>(std::time(0)));
+    
 }
 
 void World::reset(bool _generate_logs) noexcept
@@ -156,14 +153,16 @@ void World::create_PowerUp(float dt) noexcept
     {
         powerup_spawn_timer = 0.f;
 
-        powerup_y = std::rand() % (240 - 60 + 1) + 60;
+        std::uniform_int_distribution<int> dist_powerup(60, 240);
+        powerup_y = dist_powerup(rng);
+    
         powerup_x = Settings::VIRTUAL_WIDTH ;
            
         rec_powerup = sf::FloatRect(powerup_x, powerup_y,Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);
 
         while (collides(rec_powerup)) // Ajustar la posición X del powerup para evitar colisiones
         {
-            powerup_x += Settings::LOG_WIDTH;
+            powerup_x += Settings::POWERUP_WIDTH;
             rec_powerup = sf::FloatRect(powerup_x, powerup_y, Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);
         }
     }
