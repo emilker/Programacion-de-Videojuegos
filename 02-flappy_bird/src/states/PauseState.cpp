@@ -44,6 +44,7 @@ void PauseState::render(sf::RenderTarget &target) const noexcept
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
     render_text(target, Settings::VIRTUAL_WIDTH / 2, 2 * Settings::VIRTUAL_HEIGHT / 3, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
+    
     if (!powerup)
     {
         render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);

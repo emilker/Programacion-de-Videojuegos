@@ -31,7 +31,6 @@ void CountDownState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> 
     }
   
     bird = _bird;
-    
 }
 
 void CountDownState::update(float dt) noexcept
