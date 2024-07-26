@@ -25,6 +25,8 @@ public:
 
     sf::FloatRect get_collision_rect() const noexcept;
 
+    void change_texturer() noexcept;
+
     void jump() noexcept;
 
     void move(const float) noexcept;

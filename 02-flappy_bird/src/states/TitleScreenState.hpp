@@ -28,4 +28,5 @@ public:
 
 private:
     std::shared_ptr<World> world;
+    int band{0};
 };

@@ -17,6 +17,11 @@ bool GameModeNormal::should_close_log_pair() const noexcept
     return false;
 }
 
+bool GameModeNormal::generate_powerup() const noexcept
+{
+    return false;
+}
+
 float GameModeNormal::time_to_spawn_logs() const noexcept
 {
     return Settings::TIME_TO_SPAWN_LOGS;  

@@ -31,6 +31,17 @@ sf::FloatRect Bird::get_collision_rect() const noexcept
     return sf::FloatRect{x, y, width, height};
 }
 
+void Bird::change_texturer() noexcept
+{
+    if (sprite.getTexture() == &Settings::textures["bird"]) 
+    {    
+        sprite.setTexture(Settings::textures["bird_2"]); 
+    } else 
+    {
+        sprite.setTexture(Settings::textures["bird"]);
+    }
+}
+
 void Bird::jump() noexcept
 {
     if (!jumping)
