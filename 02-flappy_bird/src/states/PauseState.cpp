@@ -20,21 +20,20 @@ PauseState::PauseState(StateMachine* sm) noexcept
 
 }
 
-void PauseState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _bird, bool _log, bool _powerup, int _score, float _time) noexcept
+void PauseState::enter(std::shared_ptr<World> _world, std::shared_ptr<Bird> _bird,  bool pause, bool _timer_powerup, int _score, float _time) noexcept
 {
     world = _world;
     bird = _bird;
     score = _score;
-    log = _log;
-    powerup = _powerup;
+    timer_powerup =_timer_powerup;
     time = _time;
 }
 
 void PauseState::handle_inputs(const sf::Event& event) noexcept
 {
-   if (event.key.code == sf::Keyboard::Enter)
+   if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Enter)
     {
-        state_machine->change_state("playing", world, bird, false, powerup, score, time);
+        state_machine->change_state("playing", world, bird, false, timer_powerup, score, time);
     }
 }
 
@@ -43,9 +42,9 @@ void PauseState::render(sf::RenderTarget &target) const noexcept
     world->render(target);
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
-    render_text(target, Settings::VIRTUAL_WIDTH / 2, 2 * Settings::VIRTUAL_HEIGHT / 3, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
+    render_text(target, Settings::VIRTUAL_WIDTH / 2,Settings::VIRTUAL_HEIGHT / 2, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
     
-    if (!powerup)
+    if (timer_powerup)
     {
         render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);
     }

@@ -20,7 +20,7 @@ class PlayingState: public BaseState
 public:
     PlayingState(StateMachine* sm) noexcept;
 
-    void enter(std::shared_ptr<World> _world = nullptr, std::shared_ptr<Bird> _bird = nullptr, bool log = false, bool _powerup = false, int _score = 0, float _time = 20.f) noexcept override;
+    void enter(std::shared_ptr<World> _world = nullptr, std::shared_ptr<Bird> _bird = nullptr, bool pause = false, bool _timer_powerup = false, int _score = 0, float _time = 20.f) noexcept override;
 
     void handle_inputs(const sf::Event& event) noexcept override;
 
@@ -33,11 +33,7 @@ public:
 private:
     std::shared_ptr<Bird> bird;
     std::shared_ptr<World> world;
-
-    bool generate_log{false};
-    bool powerup{false};
-    
     int score{0};
-    
     float time{20.f};
+    bool timer_powerup{false};
 };

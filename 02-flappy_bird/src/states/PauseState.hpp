@@ -20,7 +20,7 @@ class PauseState: public BaseState
 public:
     PauseState(StateMachine* sm) noexcept;
 
-    void enter(std::shared_ptr<World> _world = nullptr, std::shared_ptr<Bird> _bird = nullptr, bool _log = false, bool _powerup = false, int _score = 0, float _time = 20.f) noexcept override;
+    void enter(std::shared_ptr<World> _world = nullptr, std::shared_ptr<Bird> _bird = nullptr, bool _pause = false, bool timer_powerup = false, int _score = 0, float _time = 20.f) noexcept override;
 
     void handle_inputs(const sf::Event& event) noexcept override;
 
@@ -29,10 +29,8 @@ public:
 private:
     std::shared_ptr<Bird> bird;
     std::shared_ptr<World> world;
-    
-    bool log{false};
-    bool powerup{false};
 
     int score{0};
     float time{0.f};
+    bool timer_powerup;
 };
