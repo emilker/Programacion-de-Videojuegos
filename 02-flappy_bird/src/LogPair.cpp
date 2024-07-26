@@ -28,8 +28,8 @@ void LogPair::update(float dt) noexcept
 {
     x += -Settings::MAIN_SCROLL_SPEED * dt;
 
-    float next_y_top = top.get_y();
-    float next_y_bottom = bottom.get_y();
+    next_y_top = top.get_y();
+    next_y_bottom = bottom.get_y();
 
     if (should_close)
     {
@@ -49,7 +49,20 @@ void LogPair::update(float dt) noexcept
         next_y_top += dy * dy_sign;
         next_y_bottom -= dy * dy_sign;
     }
-    
+    else
+    {
+        if (top.get_y() + 20 >= bottom.get_y())
+        {
+            next_y_top -= 40.f;
+            next_y_bottom += 40.f;
+        }
+
+        if (top.get_y() <= 15.f)
+        {
+            next_y_top = 25.f;
+        }
+        
+    }
 
     top.update(x, next_y_top);
     bottom.update(x, next_y_bottom);

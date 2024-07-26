@@ -36,7 +36,8 @@ void Bird::change_texturer() noexcept
     if (sprite.getTexture() == &Settings::textures["bird"]) 
     {    
         sprite.setTexture(Settings::textures["bird_2"]); 
-    } else 
+    } 
+    else 
     {
         sprite.setTexture(Settings::textures["bird"]);
     }

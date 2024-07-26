@@ -3,10 +3,6 @@
 #include <Settings.hpp>
 
 #include <src/game_modes/GameModeHard.hpp>
-<<<<<<< HEAD
-=======
-#include "GameModeHard.hpp"
->>>>>>> part-2-b
 
 void GameModeHard::handle_input(const sf::Event& event,const std::shared_ptr<Bird> bird) const noexcept
 {
@@ -57,7 +53,6 @@ bool GameModeHard::should_close_log_pair() const noexcept
 bool GameModeHard::generate_powerup() const noexcept
 {
     return true;
->>>>>>> part-2-b
 }
 
 float GameModeHard::time_to_spawn_logs() const noexcept

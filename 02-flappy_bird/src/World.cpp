@@ -12,7 +12,6 @@
 #include <src/World.hpp>
 
 #include <src/game_modes/GameMode.hpp>
-#include <World.hpp>
 
 World::World(bool _generate_logs) noexcept
     : generate_logs{_generate_logs}, background{Settings::textures["background"]}, ground{Settings::textures["ground"]},powerup{Settings::textures["PowerUp"]},
@@ -41,6 +40,11 @@ bool World::generate_powerup(bool _generate_powerup) noexcept
 bool World::collides(const sf::FloatRect& rect) const noexcept
 {
     if (rect.top + rect.height >= Settings::VIRTUAL_HEIGHT)
+    {
+        return true;
+    }
+
+    if (rect.top <= 0.f)
     {
         return true;
     }
@@ -80,8 +84,8 @@ bool World::collides_powerup(const sf::FloatRect &rect) noexcept
             generate_PowerUp = false;
             return true;
         }    
-        return false;
     }
+
     return false;
 }
 
@@ -188,7 +192,7 @@ void World::create_PowerUp(float dt) noexcept
            
         rec_powerup = sf::FloatRect(powerup_x, powerup_y,Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);
 
-        while (collides(rec_powerup)) // Ajustar la posición X del powerup para evitar colisiones
+        while (collides(rec_powerup))
         {
             powerup_x += Settings::POWERUP_WIDTH;
             rec_powerup = sf::FloatRect(powerup_x, powerup_y, Settings::POWERUP_WIDTH, Settings::POWERUP_HEIGHT);

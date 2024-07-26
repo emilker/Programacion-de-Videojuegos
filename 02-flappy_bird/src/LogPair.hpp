@@ -35,6 +35,8 @@ private:
     float y;
     bool should_close;
     float dy_sign{1.f};
+    float next_y_top;  
+    float next_y_bottom;
     Log top;
     Log bottom;
 
