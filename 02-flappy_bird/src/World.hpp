@@ -22,7 +22,6 @@
 class World
 {
 public:
-
     World(bool _generate_logs = false) noexcept;
 
     World(const World& world) = delete;
@@ -38,16 +37,15 @@ public:
     bool collides_powerup(const sf::FloatRect& rect) noexcept;
 
     bool update_scored(const sf::FloatRect& rect) noexcept;
- 
+
     void update(float dt) noexcept;
 
     void create_PowerUp(float dt) noexcept;
 
     void render(sf::RenderTarget& target) const noexcept;
-    
 private:
     bool generate_logs;
-    bool generate_PowerUp;
+    bool generate_PowerUp{false};
 
     sf::Sprite background;
     sf::Sprite ground;
@@ -66,8 +64,8 @@ private:
 
     float logs_spawn_timer{0.f};
     float powerup_spawn_timer{0.f};
+    float time_change_between_logs{Settings::TIME_TO_SPAWN_LOGS};
     float last_log_y{0.f};
 
     sf::FloatRect rec_powerup;
- 
 };

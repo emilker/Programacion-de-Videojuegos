@@ -10,13 +10,11 @@
 
 #include <Settings.hpp>
 #include <src/Bird.hpp>
-#include "Bird.hpp"
 
 Bird::Bird(float _x, float _y, float w, float h) noexcept
-    : x{_x}, y{_y}, width{w}, height{h}, vy{0.f}, sprite{Settings::textures["bird"]}
+    : x{_x}, y{_y}, width{w}, height{h}, vy{0.f}, vx{0.f},sprite{Settings::textures["bird"]}
 {
     sprite.setPosition(x, y);
-   
 }
 
 void Bird::reset(float _x, float _y) noexcept
@@ -24,25 +22,24 @@ void Bird::reset(float _x, float _y) noexcept
     x = _x;
     y = _y;
     vy = 0.f;
+    vx = 0.f;
     sprite.setPosition(x, y);
-}
-
-void Bird::change_texturer() noexcept
-{
-
-    if (sprite.getTexture() == &Settings::textures["bird"]) {
-        
-        sprite.setTexture(Settings::textures["bird_2"]);
-    } else 
-    {
-        sprite.setTexture(Settings::textures["bird"]);
-    }
-    
 }
 
 sf::FloatRect Bird::get_collision_rect() const noexcept
 {
     return sf::FloatRect{x, y, width, height};
+}
+
+void Bird::change_texturer() noexcept
+{
+    if (sprite.getTexture() == &Settings::textures["bird"]) 
+    {    
+        sprite.setTexture(Settings::textures["bird_2"]); 
+    } else 
+    {
+        sprite.setTexture(Settings::textures["bird"]);
+    }
 }
 
 void Bird::jump() noexcept
@@ -51,6 +48,11 @@ void Bird::jump() noexcept
     {
         jumping = true;
     }
+}
+
+void Bird::move(float _vx) noexcept
+{
+       vx = _vx;
 }
 
 void Bird::update(float dt) noexcept
@@ -65,6 +67,8 @@ void Bird::update(float dt) noexcept
     }
 
     y += vy * dt;
+    x += vx * dt;
+
     sprite.setPosition(x, y);
 }
 

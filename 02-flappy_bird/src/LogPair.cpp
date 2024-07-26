@@ -11,10 +11,10 @@
 #include <Settings.hpp>
 #include <src/LogPair.hpp>
 
-LogPair::LogPair(float _x, float _y) noexcept
-    : x{_x}, y{_y},
+LogPair::LogPair(float _x, float _y, bool _should_close) noexcept
+    : x{_x}, y{_y}, should_close{_should_close},
       top{x, y + Settings::LOG_HEIGHT, true},
-      bottom{x, y + Settings::LOGS_GAP + Settings::LOG_HEIGHT, false}
+      bottom{x, y + Settings::GAME_MODE->gap_change() + Settings::LOG_HEIGHT, false}
 {
 
 }
@@ -28,8 +28,31 @@ void LogPair::update(float dt) noexcept
 {
     x += -Settings::MAIN_SCROLL_SPEED * dt;
 
-    top.update(x);
-    bottom.update(x);
+    float next_y_top = top.get_y();
+    float next_y_bottom = bottom.get_y();
+
+    if (should_close)
+    {
+        float dy = Settings::LOG_MOVEMENT * dt;
+        
+        if (top.get_collision_rect().intersects(bottom.get_collision_rect()))
+        {
+            Settings::sounds["sound_log"].play();
+            dy_sign = -1.f;
+        }
+        else if (top.get_y() <= y + Settings::LOG_HEIGHT && 
+                bottom.get_y() >= y + Settings::LOGS_GAP + Settings::LOG_HEIGHT)
+        {
+            dy_sign = 1.f;
+        }
+
+        next_y_top += dy * dy_sign;
+        next_y_bottom -= dy * dy_sign;
+    }
+    
+
+    top.update(x, next_y_top);
+    bottom.update(x, next_y_bottom);
 }
 
 void LogPair::render(sf::RenderTarget& target) const noexcept
@@ -59,9 +82,10 @@ bool LogPair::update_scored(const sf::FloatRect& rect) noexcept
     return false;
 }
 
-void LogPair::reset(float _x, float _y) noexcept
+void LogPair::reset(float _x, float _y, bool _should_close) noexcept
 {
     x = _x;
     y = _y;
+    should_close = _should_close;
     scored = false;
 }

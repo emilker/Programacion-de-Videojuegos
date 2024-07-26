@@ -20,6 +20,11 @@ Log::Log(float _x, float _y, bool _inverted) noexcept
     }
 }
 
+float Log::get_y() const noexcept
+{
+    return y;
+}
+
 sf::FloatRect Log::get_collision_rect() const noexcept
 {
     if (!inverted)
@@ -30,7 +35,7 @@ sf::FloatRect Log::get_collision_rect() const noexcept
     return sf::FloatRect{x - Settings::LOG_WIDTH, y - Settings::LOG_HEIGHT, Settings::LOG_WIDTH, Settings::LOG_HEIGHT};
 }
 
-void Log::update(float _x) noexcept
+void Log::update(float _x, float _y) noexcept
 {
     x = _x;
 
@@ -38,6 +43,9 @@ void Log::update(float _x) noexcept
     {
         x += Settings::LOG_WIDTH;
     }
+    
+
+    y = _y;
 
     sprite.setPosition(x, y);
 }

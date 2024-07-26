@@ -20,7 +20,7 @@ public:
         if (buffer.size() > 0)
         {
             auto object = buffer.back();
-            object->reset(float(x), float(y));
+            object->reset(float(x), float(y), args...);
             buffer.pop_back();
             return object;
         }

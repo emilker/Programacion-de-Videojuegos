@@ -23,12 +23,13 @@ public:
 
     void reset(float _x, float _y) noexcept;
 
-    void change_texturer() noexcept;
-
-
     sf::FloatRect get_collision_rect() const noexcept;
 
+    void change_texturer() noexcept;
+
     void jump() noexcept;
+
+    void move(const float) noexcept;
 
     void update(float dt) noexcept;
 
@@ -40,7 +41,9 @@ private:
     float width;
     float height;
     float vy;
+    float vx;
     sf::Sprite sprite;
     bool jumping{false};
-
+    bool move_left{false};
+    bool move_right{false};
 };
