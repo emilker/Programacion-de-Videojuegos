@@ -12,6 +12,8 @@
 
 #include <Settings.hpp>
 
+std::mt19937 Settings::RNG{std::default_random_engine{}()};
+
 const fs::path Settings::ASSETS_PATH{"assets"};
 
 const fs::path Settings::TEXTURES_PATH{Settings::ASSETS_PATH / "textures"};
@@ -27,6 +29,8 @@ std::unordered_map<std::string, sf::SoundBuffer> Settings::sound_buffers;
 std::unordered_map<std::string, sf::Sound> Settings::sounds{};
 
 std::unordered_map<std::string, sf::Font> Settings::fonts{};
+
+std::shared_ptr<GameMode> Settings::GAME_MODE{nullptr};
 
 sf::Music Settings::music{};
 sf::Music Settings::music_2{};
@@ -70,7 +74,6 @@ void Settings::load_textures()
 
     Settings::textures["Log"] = texture;
 
-
     if (!texture.loadFromFile(Settings::TEXTURES_PATH / "Caja.png"))
     {
         throw std::runtime_error{"Error loading texture assets/graphics/Caja.png"};
@@ -100,6 +103,16 @@ void Settings::load_sounds()
 
     sound.setBuffer(result.first->second);
     Settings::sounds["jump"] = sound;
+
+    if (!buffer.loadFromFile(Settings::SOUNDS_PATH / "sound_log.wav"))
+    {
+        throw std::runtime_error{"Error loading sound assets/sounds/sound_log.wav"};
+    }
+
+    result = Settings::sound_buffers.emplace("sound_log", buffer);
+
+    sound.setBuffer(result.first->second);
+    Settings::sounds["sound_log"] = sound;
 
     if (!buffer.loadFromFile(Settings::SOUNDS_PATH / "explosion.wav"))
     {
@@ -136,7 +149,7 @@ void Settings::load_sounds()
         throw std::runtime_error{"Error loading music sounds/marios_way.ogg"};
     }
 
-     if (!Settings::music_2.openFromFile(Settings::SOUNDS_PATH / "tense_drive.ogg"))
+    if (!Settings::music_2.openFromFile(Settings::SOUNDS_PATH / "tense_drive.ogg"))
     {
         throw std::runtime_error{"Error loading music sounds/tense_drive.ogg"};
     }

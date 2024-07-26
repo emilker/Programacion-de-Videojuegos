@@ -14,14 +14,19 @@
 #include <filesystem>
 #include <string>
 #include <unordered_map>
+#include <random>
 
 namespace fs = std::filesystem;
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+#include <src/game_modes/GameMode.hpp>
+
 struct Settings
 {
+    static std::mt19937 RNG;
+
     static const fs::path ASSETS_PATH;
     static const fs::path TEXTURES_PATH;
     static const fs::path SOUNDS_PATH;
@@ -33,11 +38,11 @@ struct Settings
     static constexpr int VIRTUAL_HEIGHT{288};
     static constexpr float BIRD_WIDTH{39.f};
     static constexpr float BIRD_HEIGHT{28.f};
-    static constexpr float POWERUP_WIDTH{36.f};
-    static constexpr float POWERUP_HEIGHT{34.f};
     static constexpr float LOG_WIDTH{70.f};
     static constexpr float LOG_HEIGHT{288.f};
     static constexpr float LOGS_GAP{90.f};
+    static constexpr float POWERUP_WIDTH{36.f};
+    static constexpr float POWERUP_HEIGHT{34.f};
     static constexpr float GROUND_HEIGHT{16.f};
     static constexpr float BACKGROUND_LOOPING_POINT{1157.f};
     static constexpr float MAIN_SCROLL_SPEED{100.f};
@@ -50,10 +55,15 @@ struct Settings
     static constexpr int HUGE_TEXT_SIZE{56};
     static constexpr int FLAPPY_TEXT_SIZE{28};
 
+    static constexpr float HORIZONTAL_MOVEMENT{200.f};
+    static constexpr float LOG_MOVEMENT{25.f};
+    
     static std::unordered_map<std::string, sf::Texture> textures;
     static std::unordered_map<std::string, sf::SoundBuffer> sound_buffers;
     static std::unordered_map<std::string, sf::Sound> sounds;
     static std::unordered_map<std::string, sf::Font> fonts;
+
+    static std::shared_ptr<GameMode> GAME_MODE;
 
     static sf::Music music;
     static sf::Music music_2;
