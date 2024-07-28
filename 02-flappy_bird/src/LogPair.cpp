@@ -51,10 +51,10 @@ void LogPair::update(float dt) noexcept
     }
     else
     {
-        if (top.get_y() + 20 >= bottom.get_y())
+        if (top.get_y() + 40 >= bottom.get_y())
         {
-            next_y_top -= 40.f;
-            next_y_bottom += 40.f;
+            next_y_top -= 120.f;
+            next_y_bottom += 120.f;
         }
 
         if (top.get_y() <= 15.f)
