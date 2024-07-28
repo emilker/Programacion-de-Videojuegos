@@ -38,6 +38,11 @@ void PauseState::handle_inputs(const sf::Event& event) noexcept
     
     if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X)
     {
+        if( Settings::music_2.Playing )
+        {
+            Settings::music_2.stop();
+            Settings::music.play();
+        }
         state_machine->change_state("title");
     }
 }
