@@ -35,6 +35,11 @@ void PauseState::handle_inputs(const sf::Event& event) noexcept
     {
         state_machine->change_state("playing", world, bird, false, timer_powerup, score, time);
     }
+    
+    if(event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::X)
+    {
+        state_machine->change_state("title");
+    }
 }
 
 void PauseState::render(sf::RenderTarget &target) const noexcept
@@ -42,8 +47,13 @@ void PauseState::render(sf::RenderTarget &target) const noexcept
     world->render(target);
     bird->render(target);
     render_text(target, 20, 10, "Score: " + std::to_string(score), Settings::FLAPPY_TEXT_SIZE, "flappy", sf::Color::White);
-    render_text(target, Settings::VIRTUAL_WIDTH / 2,Settings::VIRTUAL_HEIGHT / 2, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
-    
+    render_text(target, Settings::VIRTUAL_WIDTH / 2, Settings::VIRTUAL_HEIGHT / 2.5, "PAUSE", Settings::FLAPPY_TEXT_SIZE, "font", sf::Color::White, true);
+
+    render_text(target, Settings::VIRTUAL_WIDTH / 2, 2 * Settings::VIRTUAL_HEIGHT / 4, "Press enter to return to the game", Settings::MEDIUM_TEXT_SIZE, "font", sf::Color::White, true);
+
+    render_text(target, Settings::VIRTUAL_WIDTH / 2, 2 * Settings::VIRTUAL_HEIGHT / 3, "Press X to return to the beginning", Settings::MEDIUM_TEXT_SIZE, "font", sf::Color::White, true);
+
+
     if (timer_powerup)
     {
         render_text(target, 20, 50, "Time: " + std::to_string(static_cast<int>(time)), Settings::FLAPPY_TEXT_SIZE,"flappy", sf::Color::White);

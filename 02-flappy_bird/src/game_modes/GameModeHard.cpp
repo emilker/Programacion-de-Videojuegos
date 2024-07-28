@@ -6,7 +6,7 @@
 
 void GameModeHard::handle_input(const sf::Event& event,const std::shared_ptr<Bird> bird) const noexcept
 {
-    if (event.key.code == sf::Keyboard::W && event.type == sf::Event::KeyPressed)
+    if (event.key.code == sf::Keyboard::W && event.type == sf::Event::KeyPressed || event.type == sf::Event::MouseButtonPressed && event.mouseButton.button == sf::Mouse::Left)
    {
         bird->jump();
    }
