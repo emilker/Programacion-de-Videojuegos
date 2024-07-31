@@ -46,5 +46,5 @@ class PowerUp:
             settings.FRAMES["powerups"][self.frame],
         )
 
-    def take(self, play_state: TypeVar("PlayState")) -> None:
+    def take(self, play_state: TypeVar("PlayState")) -> None: # type: ignore
         raise NotImplementedError

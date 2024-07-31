@@ -27,7 +27,7 @@ class TwoMoreBall(PowerUp):
         super().__init__(x, y, 8)
         self.ball_factory = Factory(Ball)
 
-    def take(self, play_state: TypeVar("PlayState")) -> None:
+    def take(self, play_state: TypeVar("PlayState")) -> None: # type: ignore
         paddle = play_state.paddle
 
         for _ in range(2):
