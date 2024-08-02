@@ -35,7 +35,10 @@ class PlayState(BaseState):
             self.score
             + settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
         )
-        self.powerups = params.get("powerups", [])
+        self.powerups      = params.get("powerups", [])
+        self.sticky_paddle = params.get("sticky_paddle", False)
+        self.sticked_balls = params.get("sticked_balls", [])
+        self.freeze_ball   = params.get("freeze_ball", False)
 
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
@@ -43,20 +46,41 @@ class PlayState(BaseState):
             settings.SOUNDS["paddle_hit"].play()
 
         self.powerups_abstract_factory = AbstractFactory("src.powerups")
-
+    
+    def fire_sticked_balls(self):
+        for ball in self.sticked_balls:
+            ball.vx = random.randint(-80, 80)
+            ball.vy = random.randint(-170, -100)
+            settings.SOUNDS["paddle_hit"].play()
+        self.sticked_balls = []
+        
     def update(self, dt: float) -> None:
+        deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
         self.paddle.update(dt)
+        for i in range(len(self.sticked_balls)):
+            self.sticked_balls[i].x = self.paddle.x + deltas[i]
 
         for ball in self.balls:
+            if ball in self.sticked_balls:
+                continue
+            
+            if self.freeze_ball:
+                continue
+
             ball.update(dt)
             ball.solve_world_boundaries()
 
             # Check collision with the paddle
             if ball.collides(self.paddle):
-                settings.SOUNDS["paddle_hit"].stop()
-                settings.SOUNDS["paddle_hit"].play()
-                ball.rebound(self.paddle)
-                ball.push(self.paddle)
+                if self.sticky_paddle:
+                    ball.vx = 0
+                    ball.vy = 0
+                    self.sticked_balls.append(ball)
+                else:    
+                    settings.SOUNDS["paddle_hit"].stop()
+                    settings.SOUNDS["paddle_hit"].play()
+                    ball.rebound(self.paddle)
+                    ball.push(self.paddle)
 
             # Check collision with brickset
             if not ball.collides(self.brickset):
@@ -91,6 +115,24 @@ class PlayState(BaseState):
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("TwoMoreBall").create(
+                        r.centerx - 8, r.centery - 8
+                    )
+                )
+            
+            #Chence to generate take the ball
+            if not self.sticky_paddle and random.random() < 0.05:
+                r = brick.get_collision_rect()
+                self.powerups.append(
+                    self.powerups_abstract_factory.get_factory("TakeTheBall").create(
+                        r.centerx - 8, r.centery - 8
+                    )
+                )
+
+            #Chence to generate Freeze Balls
+            if not self.freeze_ball and random.random() < 0.05:
+                r = brick.get_collision_rect()
+                self.powerups.append(
+                    self.powerups_abstract_factory.get_factory("FreezeBalls").create(
                         r.centerx - 8, r.centery - 8
                     )
                 )
@@ -192,6 +234,8 @@ class PlayState(BaseState):
                 self.paddle.vx = settings.PADDLE_SPEED
             elif input_data.released and self.paddle.vx > 0:
                 self.paddle.vx = 0
+        elif input_id == "enter" and input_data.pressed:
+            self.fire_sticked_balls()
         elif input_id == "pause" and input_data.pressed:
             self.state_machine.change(
                 "pause",
@@ -204,4 +248,7 @@ class PlayState(BaseState):
                 points_to_next_live=self.points_to_next_live,
                 live_factor=self.live_factor,
                 powerups=self.powerups,
+                sticky_paddle=self.sticky_paddle,
+                sticked_balls=self.sticked_balls,
+                freeze_ball=self.freeze_ball
             )

@@ -3,6 +3,7 @@ import pygame
 from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
+from gale.timer import Timer
 
 import settings
 
@@ -18,7 +19,11 @@ class PauseState(BaseState):
         self.live_factor = params["live_factor"]
         self.points_to_next_live = params["points_to_next_live"]
         self.powerups = params["powerups"]
+        self.sticky_paddle = params["sticky_paddle"]
+        self.sticked_balls = params["sticked_balls"]
+        self.freeze_ball   = params["freeze_ball"]
         settings.SOUNDS["pause"].play()
+        Timer.pause()
 
     def render(self, surface: pygame.Surface) -> None:
         heart_x = settings.VIRTUAL_WIDTH - 120
@@ -76,4 +81,7 @@ class PauseState(BaseState):
                 live_factor=self.live_factor,
                 powerups=self.powerups,
                 resume=True,
+                sticky_paddle=self.sticky_paddle,
+                sticked_balls=self.sticked_balls,
+                freeze_ball=self.freeze_ball
             )
