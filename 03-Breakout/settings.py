@@ -31,6 +31,7 @@ input_handler.InputHandler.set_keyboard_action(input_handler.KEY_RIGHT, "move_ri
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_DOWN, "move_down")
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_LEFT, "move_left")
 input_handler.InputHandler.set_keyboard_action(input_handler.KEY_SPACE, "pause")
+input_handler.InputHandler.set_keyboard_action(input_handler.KEY_f, "f")
 
 # Size of our actual window
 WINDOW_WIDTH = 1280
@@ -41,6 +42,8 @@ VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
 
 PADDLE_SPEED = 200
+
+SHOT_SPEED = -100
 
 NUM_HIGHSCORES = 10
 
@@ -82,6 +85,8 @@ TEXTURES = {
     "spritesheet": pygame.image.load(BASE_DIR / "assets" / "textures" / "breakout.png"),
     "hearts": pygame.image.load(BASE_DIR / "assets" / "textures" / "hearts.png"),
     "arrows": pygame.image.load(BASE_DIR / "assets" / "textures" / "arrows.png"),
+    "cannon": pygame.image.load(BASE_DIR / "assets" / "textures" / "cannon.png"),
+    "shot": pygame.image.load(BASE_DIR / "assets" / "textures" / "shot.png"),
 }
 
 FRAMES = {
