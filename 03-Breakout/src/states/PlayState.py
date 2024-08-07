@@ -116,9 +116,6 @@ class PlayState(BaseState):
                     settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
                 )
                 self.paddle.inc_size()
-                if self.cannons:
-                    self.cannons[0].update(self.paddle.x)  
-                    self.cannons[1].update(self.paddle.x + self.paddle.width - 9)  
             # Chance to generate two more balls
             if random.random() < 0.1:
                 r = brick.get_collision_rect()
@@ -137,7 +134,6 @@ class PlayState(BaseState):
                         )
                     )  
                 self.cannons_active = True 
-                
         if self.cannons:
             if self.cannons[0].shots == 4:  
                 self.cannons_active = False 
