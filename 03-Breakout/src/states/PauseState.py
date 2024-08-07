@@ -12,6 +12,9 @@ class PauseState(BaseState):
         self.level = params["level"]
         self.paddle = params["paddle"]
         self.balls = params["balls"]
+        self.cannons = params["cannons"]
+        self.shots = params.get("shots", [])
+        self.cannons_active = params["cannons_active"]
         self.brickset = params["brickset"]
         self.score = params["score"]
         self.lives = params["lives"]
@@ -71,6 +74,9 @@ class PauseState(BaseState):
                 lives=self.lives,
                 paddle=self.paddle,
                 balls=self.balls,
+                cannons=self.cannons,
+                shots=self.shots,
+                cannons_active=self.cannons_active,
                 brickset=self.brickset,
                 points_to_next_live=self.points_to_next_live,
                 live_factor=self.live_factor,
