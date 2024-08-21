@@ -14,7 +14,7 @@ class FreezeBalls(PowerUp):
     def __init__(self, x: int, y: int) -> None:
         super().__init__(x, y, 6)
 
-    def take(self, play_state: TypeVar("PlayState")) -> None: # type: ignore
+    def take(self, play_state: TypeVar("PlayState")) -> None:  # type: ignore
         self.active = False
         
         settings.SOUNDS["freeze_sound"].stop()
@@ -28,4 +28,4 @@ class FreezeBalls(PowerUp):
         def finish_freeze_ball():
             play_state.freeze_ball = False
 
-        Timer.after(5, finish_freeze_ball)
+        Timer.after(2.5, finish_freeze_ball)

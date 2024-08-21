@@ -129,7 +129,7 @@ class PlayState(BaseState):
                 )
 
             #Chence to generate Freeze Balls
-            if not self.freeze_ball and random.random() < 0.05:
+            if not self.freeze_ball and random.random() < 0.02:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("FreezeBalls").create(

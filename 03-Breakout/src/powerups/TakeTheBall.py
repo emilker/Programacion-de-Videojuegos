@@ -26,7 +26,7 @@ class TakeTheBall(PowerUp):
             play_state.sticky_paddle = False
             play_state.fire_sticked_balls()
         
-        Timer.after(10, finish_sticky_paddle)
+        Timer.after(5, finish_sticky_paddle)
 
 
 
