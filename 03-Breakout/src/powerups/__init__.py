@@ -14,5 +14,4 @@ from src.powerups.TakeTheBall import TakeTheBall
 from src.powerups.FreezeBalls import FreezeBalls
 from src.powerups.Cannons import Cannons
 
-
 (PowerUp, TwoMoreBall, TakeTheBall, FreezeBalls, Cannons)
