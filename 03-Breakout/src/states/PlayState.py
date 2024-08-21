@@ -16,6 +16,9 @@ from gale.factory import AbstractFactory
 from gale.state import BaseState
 from gale.input_handler import InputData
 from gale.text import render_text
+from src.Shot import shot
+from src.particle import particle
+from gale.factory import Factory
 
 import settings
 import src.powerups
@@ -35,16 +38,17 @@ class PlayState(BaseState):
             self.score
             + settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
         )
-        self.powerups      = params.get("powerups", [])
-        self.sticky_paddle = params.get("sticky_paddle", False)
-        self.sticked_balls = params.get("sticked_balls", [])
-        self.freeze_ball   = params.get("freeze_ball", False)
+        self.powerups       = params.get("powerups", [])
+        self.sticky_paddle  = params.get("sticky_paddle", False)
+        self.sticked_balls  = params.get("sticked_balls", [])
+        self.freeze_ball    = params.get("freeze_ball", False)
+        self.shots          = params.get("shots", [])
+        self.cannons_active = params.get("cannons_active", False)
 
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
             self.balls[0].vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
-
         self.powerups_abstract_factory = AbstractFactory("src.powerups")
     
     def fire_sticked_balls(self):
@@ -53,12 +57,39 @@ class PlayState(BaseState):
             ball.vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
         self.sticked_balls = []
-        
+        self.particle_instance = particle()
+
     def update(self, dt: float) -> None:
         deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
         self.paddle.update(dt)
+
         for i in range(len(self.sticked_balls)):
             self.sticked_balls[i].x = self.paddle.x + deltas[i]
+        
+        self.particle_instance.update(dt)
+     
+        if self.cannons:
+            self.cannons[0].update(self.paddle.x - 3)  
+            self.cannons[1].update(self.paddle.x + self.paddle.width - 7)
+
+
+        for shot in self.shots:
+            shot.update(dt) 
+            # Check collision with world
+            if shot.solve_world_boundaries():
+                self.particle_instance.generate(shot.x)
+
+            if not shot.collides(self.brickset):
+                continue
+
+            brick = self.brickset.get_colliding_brick(shot.get_collision_rect())
+
+            if brick is None:
+                continue
+
+            brick.destroy()
+            shot.active = False
+            self.score += brick.score()
 
         for ball in self.balls:
             if ball in self.sticked_balls:
@@ -109,7 +140,6 @@ class PlayState(BaseState):
                     settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
                 )
                 self.paddle.inc_size()
-
             # Chance to generate two more balls
             if random.random() < 0.1:
                 r = brick.get_collision_rect()
@@ -137,9 +167,27 @@ class PlayState(BaseState):
                     )
                 )
 
+            #Generate cannons
+            if not self.cannons:
+                if random.random() < 1 and not self.cannons_active:
+                    r = brick.get_collision_rect()
+                    self.powerups.append(
+                        self.powerups_abstract_factory.get_factory("Cannons").create(
+                            r.centerx - 8, r.centery - 8
+                        )
+                    )  
+                self.cannons_active = True 
+        if self.cannons:
+            if self.cannons[0].shots == 4:  
+                self.cannons_active = False 
+
+        # Removing all cannons that are not in play       
+        self.cannons = [cannon for cannon in self.cannons if cannon.active]
+        # Removing all shots that are not in play
+        self.shots = [shot for shot in self.shots if shot.active]
         # Removing all balls that are not in play
         self.balls = [ball for ball in self.balls if ball.active]
-
+        
         self.brickset.update(dt)
 
         if not self.balls:
@@ -217,8 +265,16 @@ class PlayState(BaseState):
 
         self.paddle.render(surface)
 
+        self.particle_instance.render(surface)
+
         for ball in self.balls:
             ball.render(surface)
+
+        for cannon in self.cannons:
+            cannon.render(surface)    
+
+        for shot in self.shots:
+            shot.render(surface)    
 
         for powerup in self.powerups:
             powerup.render(surface)
@@ -244,6 +300,9 @@ class PlayState(BaseState):
                 lives=self.lives,
                 paddle=self.paddle,
                 balls=self.balls,
+                cannons=self.cannons,
+                shots=self.shots,
+                cannons_active=self.cannons_active,
                 brickset=self.brickset,
                 points_to_next_live=self.points_to_next_live,
                 live_factor=self.live_factor,
@@ -252,3 +311,13 @@ class PlayState(BaseState):
                 sticked_balls=self.sticked_balls,
                 freeze_ball=self.freeze_ball
             )
+        elif input_id == "f" and input_data.pressed:
+            if self.cannons:
+                    if not self.shots:
+                        self.shot_factory = Factory(shot)
+                        a = self.shot_factory.create(self.paddle.x - 1, self.paddle.y)
+                        self.shots.append(a)
+                        b = self.shot_factory.create(self.paddle.x + self.paddle.width - 9, self.paddle.y)
+                        self.shots.append(b)
+                        for cannon in self.cannons:
+                            cannon.shot()
