@@ -125,6 +125,7 @@ class PlayState(BaseState):
                     )
                 )
 
+            #Generate cannons
             if not self.cannons:
                 if random.random() < 1 and not self.cannons_active:
                     r = brick.get_collision_rect()

@@ -26,7 +26,6 @@ class Cannons(PowerUp):
    
     def take(self, play_state: TypeVar("PlayState")) -> None:
         paddle = play_state.paddle
-       
         
         a = self.connon_factory.create(paddle.x - 3, paddle.y)
         play_state.cannons.append(a)
