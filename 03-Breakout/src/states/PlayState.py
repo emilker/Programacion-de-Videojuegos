@@ -39,12 +39,14 @@ class PlayState(BaseState):
             + settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
         )
         self.powerups       = params.get("powerups", [])
+        self.cannons = params.get("cannons", [])
         self.sticky_paddle  = params.get("sticky_paddle", False)
         self.sticked_balls  = params.get("sticked_balls", [])
         self.freeze_ball    = params.get("freeze_ball", False)
         self.shots          = params.get("shots", [])
         self.cannons_active = params.get("cannons_active", False)
-
+        self.particle_instance = particle()
+        
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
             self.balls[0].vy = random.randint(-170, -100)
@@ -57,7 +59,6 @@ class PlayState(BaseState):
             ball.vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
         self.sticked_balls = []
-        self.particle_instance = particle()
 
     def update(self, dt: float) -> None:
         deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
