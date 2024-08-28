@@ -19,10 +19,10 @@ class PowerUp:
     The base power-up.
     """
 
-    def __init__(self, x: int, y: int, frame: int) -> None:
+    def __init__(self, x: int, y: int, frame: int, powerup_speed: int) -> None:
         self.x = x
         self.y = y
-        self.vy = settings.POWERUP_SPEED
+        self.vy = powerup_speed
         self.active = True
         self.frame = frame
 

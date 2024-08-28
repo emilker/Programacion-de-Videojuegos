@@ -12,7 +12,7 @@ from gale.timer import Timer
 class FreezeBalls(PowerUp):
 
     def __init__(self, x: int, y: int) -> None:
-        super().__init__(x, y, 6)
+        super().__init__(x, y, 6, 40)
 
     def take(self, play_state: TypeVar("PlayState")) -> None:  # type: ignore
         self.active = False
