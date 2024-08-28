@@ -170,14 +170,14 @@ class PlayState(BaseState):
 
             #Generate cannons
             if not self.cannons:
-                if random.random() < 1 and not self.cannons_active:
+                if random.random() < 0.1 and not self.cannons_active:
                     r = brick.get_collision_rect()
                     self.powerups.append(
                         self.powerups_abstract_factory.get_factory("Cannons").create(
                             r.centerx - 8, r.centery - 8
                         )
                     )  
-                self.cannons_active = True 
+                    self.cannons_active = True 
         if self.cannons:
             if self.cannons[0].shots == 4:  
                 self.cannons_active = False 
