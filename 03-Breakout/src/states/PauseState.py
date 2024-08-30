@@ -91,3 +91,6 @@ class PauseState(BaseState):
                 sticked_balls=self.sticked_balls,
                 freeze_ball=self.freeze_ball
             )
+
+    def exit(self) -> None:
+        Timer.resume()

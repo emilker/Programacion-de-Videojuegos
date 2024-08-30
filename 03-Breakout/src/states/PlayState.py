@@ -38,12 +38,12 @@ class PlayState(BaseState):
             self.score
             + settings.PADDLE_GROW_UP_POINTS * (self.paddle.size + 1) * self.level
         )
-        self.powerups       = params.get("powerups", [])
+        self.powerups = params.get("powerups", [])
+        self.sticky_paddle = params.get("sticky_paddle", False)
+        self.sticked_balls = params.get("sticked_balls", [])
+        self.freeze_ball = params.get("freeze_ball", False)
         self.cannons = params.get("cannons", [])
-        self.sticky_paddle  = params.get("sticky_paddle", False)
-        self.sticked_balls  = params.get("sticked_balls", [])
-        self.freeze_ball    = params.get("freeze_ball", False)
-        self.shots          = params.get("shots", [])
+        self.shots = params.get("shots", [])
         self.cannons_active = params.get("cannons_active", False)
         self.particle_instance = particle()
 
@@ -52,6 +52,8 @@ class PlayState(BaseState):
             self.balls[0].vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
         self.powerups_abstract_factory = AbstractFactory("src.powerups")
+    
+        self.particle_instance = particle()
     
     def fire_sticked_balls(self):
         for ball in self.sticked_balls:
@@ -64,11 +66,10 @@ class PlayState(BaseState):
     def update(self, dt: float) -> None:
         deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
         self.paddle.update(dt)
+        self.particle_instance.update(dt)
 
         for i in range(len(self.sticked_balls)):
             self.sticked_balls[i].x = self.paddle.x + deltas[i]
-        
-        self.particle_instance.update(dt)
      
         if self.cannons:
             self.cannons[0].update(self.paddle.x - 3)  
@@ -150,18 +151,17 @@ class PlayState(BaseState):
                         r.centerx - 8, r.centery - 8
                     )
                 )
-            
             #Chence to generate take the ball
-            if not self.sticky_paddle and random.random() < 0.3:
+
+            if not self.sticky_paddle and random.random() < 0.2:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("TakeTheBall").create(
                         r.centerx - 8, r.centery - 8
                     )
                 )
-
             #Chence to generate Freeze Balls
-            if not self.freeze_ball and random.random() < 0.2:
+            if not self.freeze_ball and random.random() < 0.3:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("FreezeBalls").create(
@@ -169,10 +169,9 @@ class PlayState(BaseState):
                     )
 
                 )
-
             #Generate cannons
             if not self.cannons:
-                if random.random() < 0.15 and not self.cannons_active:
+                if random.random() < 0.4 and not self.cannons_active:
                     r = brick.get_collision_rect()
                     self.powerups.append(
                         self.powerups_abstract_factory.get_factory("Cannons").create(
