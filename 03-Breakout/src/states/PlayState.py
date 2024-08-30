@@ -46,7 +46,7 @@ class PlayState(BaseState):
         self.shots          = params.get("shots", [])
         self.cannons_active = params.get("cannons_active", False)
         self.particle_instance = particle()
-        
+
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
             self.balls[0].vy = random.randint(-170, -100)
@@ -59,6 +59,7 @@ class PlayState(BaseState):
             ball.vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
         self.sticked_balls = []
+        
 
     def update(self, dt: float) -> None:
         deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
@@ -151,7 +152,7 @@ class PlayState(BaseState):
                 )
             
             #Chence to generate take the ball
-            if not self.sticky_paddle and random.random() < 0.05:
+            if not self.sticky_paddle and random.random() < 0.3:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("TakeTheBall").create(
@@ -160,24 +161,26 @@ class PlayState(BaseState):
                 )
 
             #Chence to generate Freeze Balls
-            if not self.freeze_ball and random.random() < 0.02:
+            if not self.freeze_ball and random.random() < 0.2:
                 r = brick.get_collision_rect()
                 self.powerups.append(
                     self.powerups_abstract_factory.get_factory("FreezeBalls").create(
                         r.centerx - 8, r.centery - 8
                     )
+
                 )
 
             #Generate cannons
             if not self.cannons:
-                if random.random() < 1 and not self.cannons_active:
+                if random.random() < 0.15 and not self.cannons_active:
                     r = brick.get_collision_rect()
                     self.powerups.append(
                         self.powerups_abstract_factory.get_factory("Cannons").create(
                             r.centerx - 8, r.centery - 8
                         )
                     )  
-                self.cannons_active = True 
+                    self.cannons_active = True 
+                
         if self.cannons:
             if self.cannons[0].shots == 4:  
                 self.cannons_active = False 

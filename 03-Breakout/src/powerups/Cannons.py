@@ -21,10 +21,10 @@ from src.powerups.PowerUp import PowerUp
 class Cannons(PowerUp):
 
     def __init__(self, x: int, y: int) -> None:
-        super().__init__(x, y, 3)
+        super().__init__(x, y, 3, 70)
         self.connon_factory = Factory(cannon)
    
-    def take(self, play_state: TypeVar("PlayState")) -> None:
+    def take(self, play_state: TypeVar("PlayState")) -> None: # type: ignore
         paddle = play_state.paddle
         
         a = self.connon_factory.create(paddle.x - 3, paddle.y)
