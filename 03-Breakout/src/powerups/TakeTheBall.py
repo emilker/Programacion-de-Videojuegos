@@ -16,21 +16,8 @@ class TakeTheBall(PowerUp):
 
     def take(self, play_state: TypeVar("PlayState")) -> None: # type: ignore
         self.active = False
-
-        if play_state.sticky_paddle:
-           return 
-
+        
         play_state.sticky_paddle = True
-
-        def finish_sticky_paddle():
-            play_state.sticky_paddle = False
-            play_state.fire_sticked_balls()
-        
-        Timer.after(5, finish_sticky_paddle)
-
-
-
-        
 
 
     

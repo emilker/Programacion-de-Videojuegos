@@ -19,13 +19,5 @@ class FreezeBalls(PowerUp):
         
         settings.SOUNDS["freeze_sound"].stop()
         settings.SOUNDS["freeze_sound"].play()
-
-        if play_state.freeze_ball:
-           return 
         
         play_state.freeze_ball = True
-
-        def finish_freeze_ball():
-            play_state.freeze_ball = False
-
-        Timer.after(2.5, finish_freeze_ball)
