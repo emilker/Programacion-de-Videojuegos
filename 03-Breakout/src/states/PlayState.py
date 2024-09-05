@@ -19,6 +19,7 @@ from gale.text import render_text
 from src.Shot import shot
 from src.particle import particle
 from gale.factory import Factory
+from gale.timer import Timer
 
 import settings
 import src.powerups
@@ -47,6 +48,10 @@ class PlayState(BaseState):
         self.cannons_active = params.get("cannons_active", False)
         self.particle_instance = particle()
 
+        self.timer = params.get("timer", 5)
+        self.timer_2 = params.get("timer_2", 3)
+        self.pause_active = params.get("pause_active", False)
+
         if not params.get("resume", False):
             self.balls[0].vx = random.randint(-80, 80)
             self.balls[0].vy = random.randint(-170, -100)
@@ -54,6 +59,27 @@ class PlayState(BaseState):
         self.powerups_abstract_factory = AbstractFactory("src.powerups")
     
         self.particle_instance = particle()
+        
+        def finish_sticky_paddle() :
+            self.sticky_paddle = False
+            self.fire_sticked_balls()
+    
+        def decrement_timer():
+            if not self.pause_active:
+                
+                if self.sticky_paddle:
+                    self.timer-=1
+                    if self. timer <= 0:
+                        self.timer =  5
+                        finish_sticky_paddle()
+
+                if self.freeze_ball:
+                    self.timer_2-=1
+                    if self. timer_2 <= 0:
+                        self.timer_2 =  3
+                        self.freeze_ball = False
+
+        Timer.every(1, decrement_timer)
     
     def fire_sticked_balls(self):
         for ball in self.sticked_balls:
@@ -61,10 +87,11 @@ class PlayState(BaseState):
             ball.vy = random.randint(-170, -100)
             settings.SOUNDS["paddle_hit"].play()
         self.sticked_balls = []
-        
-
+                    
     def update(self, dt: float) -> None:
+       
         deltas = [ball.x - self.paddle.x for ball in self.sticked_balls]
+        
         self.paddle.update(dt)
         self.particle_instance.update(dt)
 
@@ -74,7 +101,6 @@ class PlayState(BaseState):
         if self.cannons:
             self.cannons[0].update(self.paddle.x - 3)  
             self.cannons[1].update(self.paddle.x + self.paddle.width - 7)
-
 
         for shot in self.shots:
             shot.update(dt) 
@@ -296,6 +322,7 @@ class PlayState(BaseState):
         elif input_id == "enter" and input_data.pressed:
             self.fire_sticked_balls()
         elif input_id == "pause" and input_data.pressed:
+            self.pause_active = True
             self.state_machine.change(
                 "pause",
                 level=self.level,
@@ -310,9 +337,11 @@ class PlayState(BaseState):
                 points_to_next_live=self.points_to_next_live,
                 live_factor=self.live_factor,
                 powerups=self.powerups,
-                sticky_paddle=self.sticky_paddle,
+                sticky_paddle=self.sticky_paddle ,
                 sticked_balls=self.sticked_balls,
-                freeze_ball=self.freeze_ball
+                freeze_ball=self.freeze_ball,
+                timer=self.timer,
+                timer_2=self.timer_2,
             )
         elif input_id == "f" and input_data.pressed:
             if self.cannons:
@@ -324,3 +353,9 @@ class PlayState(BaseState):
                         self.shots.append(b)
                         for cannon in self.cannons:
                             cannon.shot()
+
+   
+
+
+        
+        

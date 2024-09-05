@@ -24,9 +24,11 @@ class PauseState(BaseState):
         self.powerups = params["powerups"]
         self.sticky_paddle = params["sticky_paddle"]
         self.sticked_balls = params["sticked_balls"]
-        self.freeze_ball   = params["freeze_ball"]
+        self.freeze_ball = params["freeze_ball"]
+        self.timer = params["timer"]
+        self.timer_2 = params["timer_2"]
         settings.SOUNDS["pause"].play()
-        Timer.pause()
+     
 
     def render(self, surface: pygame.Surface) -> None:
         heart_x = settings.VIRTUAL_WIDTH - 120
@@ -89,8 +91,7 @@ class PauseState(BaseState):
                 resume=True,
                 sticky_paddle=self.sticky_paddle,
                 sticked_balls=self.sticked_balls,
-                freeze_ball=self.freeze_ball
+                freeze_ball=self.freeze_ball,
+                timer=self.timer,
+                timer_2=self.timer_2,
             )
-
-    def exit(self) -> None:
-        Timer.resume()
