@@ -26,6 +26,9 @@ class PlayState(BaseState):
         self.board = enter_params["board"]
         self.score = enter_params["score"]
 
+        #Bandera para ver si se esta presionando el click
+        self.click_pressed = False 
+        
         # Position in the grid which we are highlighting
         self.board_highlight_i1 = -1
         self.board_highlight_j1 = -1
@@ -135,6 +138,7 @@ class PlayState(BaseState):
             j = (pos_x - self.board.x) // settings.TILE_SIZE
 
             if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH:
+                self.click_pressed = True
                 if not self.highlighted_tile:
                     self.highlighted_tile = True
                     self.highlighted_i1 = i
