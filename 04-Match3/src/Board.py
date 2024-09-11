@@ -24,7 +24,8 @@ class Board:
         self.y = y
         self.matches: List[List[Tile]] = []
         self.tiles: List[List[Tile]] = []
-        self.__initialize_tiles()
+        self.tile: Tile
+        self._initialize_tiles()
 
     def render(self, surface: pygame.Surface) -> None:
         for row in self.tiles:
@@ -32,20 +33,12 @@ class Board:
                 tile.render(surface, self.x, self.y)
 
     def __is_match_generated(self, i: int, j: int, color: int) -> bool:
-        if (
-            i >= 2
-            and self.tiles[i - 1][j].color == color
-            and self.tiles[i - 2][j].color == color
-        ):
+        if ( i >= 2 and self.tiles[i - 1][j].color == color and self.tiles[i - 2][j].color == color ):
             return True
 
-        return (
-            j >= 2
-            and self.tiles[i][j - 1].color == color
-            and self.tiles[i][j - 2].color == color
-        )
+        return ( j >= 2 and self.tiles[i][j - 1].color == color and self.tiles[i][j - 2].color == color )
 
-    def __initialize_tiles(self) -> None:
+    def _initialize_tiles(self) -> None:
         self.tiles = [
             [None for _ in range(settings.BOARD_WIDTH)]
             for _ in range(settings.BOARD_HEIGHT)
@@ -108,6 +101,14 @@ class Board:
 
         match: List[Tile] = []
 
+        if  (len(h_match) + len(v_match)) == 3:
+            if self.tiles[tile.i][tile.j] not in self.in_match:
+                self.tiles[tile.i][tile.j].powerup_4 = True
+
+        if  (len(h_match) + len(v_match)) == 4:
+            if self.tiles[tile.i][tile.j] not in self.in_match:
+                self.tiles[tile.i][tile.j].powerup_5 = True
+
         if len(h_match) >= 2:
             for t in h_match:
                 if t not in self.in_match:
@@ -148,12 +149,76 @@ class Board:
         delattr(self, "in_stack")
 
         return self.matches if len(self.matches) > 0 else None
+    
+    def Powerup_4(self, tile: Tile) -> None:
+        
+        for j in range(8):
+            if self.tiles[tile.i][j] == None:
+                continue
+
+            if self.tiles[tile.i][j].powerup_4 and self.tiles[tile.i][j].use_powerup:
+                self.tiles[tile.i][j].use_powerup = False
+                self.Powerup_4(self.tiles[tile.i][j])
+                continue    
+
+            if self.tiles[tile.i][j].powerup_5 and self.tiles[tile.i][j].use_powerup:
+                self.tiles[tile.i][j].use_powerup = False
+                self.Powerup_5(self.tiles[tile.i][j])    
+
+            self.tiles[tile.i][j] = None
+        
+        for i in range(8):
+            if self.tiles[i][tile.j] == None:
+                continue
+
+            if self.tiles[i][tile.j].powerup_4 and self.tiles[i][tile.j].use_powerup:
+                self.tiles[i][tile.j].use_powerup = False 
+                self.Powerup_4(self.tiles[i][tile.j])
+                continue    
+
+            if self.tiles[i][tile.j].powerup_5 and self.tiles[i][tile.j].use_powerup:
+                self.tiles[i][tile.j].use_powerup = False 
+                self.Powerup_5(self.tiles[i][tile.j]) 
+
+            self.tiles[i][tile.j] = None    
+
+    def Powerup_5(self, tile: Tile) -> None:
+        color = tile.color 
+
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH):
+
+                if self.tiles[i][j] == None:
+                    continue
+                
+                if self.tiles[i][j].powerup_4 and self.tiles[i][j].use_powerup:
+                    self.tiles[i][j].use_powerup = False 
+                    self.Powerup_4(self.tiles[i][j])
+                    continue    
+
+                if self.tiles[i][j].color == color:
+                    self.tiles[i][j] = None
+ 
 
     def remove_matches(self) -> None:
         for match in self.matches:
             for tile in match:
-                self.tiles[tile.i][tile.j] = None
 
+                if self.tiles[tile.i][tile.j] == None:
+                    continue
+
+                if (self.tiles[tile.i][tile.j].powerup_4 or self.tiles[tile.i][tile.j].powerup_5 ) and  not self.tiles[tile.i][tile.j].use_powerup:
+                    self.tiles[tile.i][tile.j].use_powerup = True 
+                    continue
+
+                if self.tiles[tile.i][tile.j].powerup_4 and self.tiles[tile.i][tile.j].use_powerup:
+                    self.Powerup_4(self.tiles[tile.i][tile.j])
+                    continue
+
+                if self.tiles[tile.i][tile.j].powerup_5 and self.tiles[tile.i][tile.j].use_powerup:
+                    self.Powerup_5(self.tiles[tile.i][tile.j])
+
+                self.tiles[tile.i][tile.j] = None
         self.matches = []
 
     def get_falling_tiles(self) -> Tuple[Any, Dict[str, Any]]:
@@ -208,3 +273,67 @@ class Board:
                     tweens.append((tile, {"y": tile.i * settings.TILE_SIZE}))
 
         return tweens
+     
+    def movement(self, tile: Tile, color: int) -> bool :
+    
+        h_match: List[Tile] = []
+        v_match: List[Tile] = []
+
+        # Check left
+        if tile.j > 0:
+            left = max(0, tile.j - 2)
+            for j in range(tile.j - 1, left - 1, -1):
+                if self.tiles[tile.i][j].color != color or self.tiles[tile.i][j] == self.tile:
+                    break
+                h_match.append(self.tiles[tile.i][j])
+
+        # Check right
+        if tile.j < settings.BOARD_WIDTH - 1:
+            right = min(settings.BOARD_WIDTH - 1, tile.j + 2)
+            for j in range(tile.j + 1, right + 1):
+                if self.tiles[tile.i][j].color != color or self.tiles[tile.i][j] == self.tile:
+                    break
+                h_match.append(self.tiles[tile.i][j])
+
+        if len(h_match) >= 2:       
+            return True
+        ## Check vertical match
+
+        # Check top
+        if tile.i > 0:
+            top = max(0, tile.i - 2)
+            for i in range(tile.i - 1, top - 1, -1):
+                if self.tiles[i][tile.j].color != color or self.tiles[i][tile.j] == self.tile:
+                    break
+                v_match.append(self.tiles[i][tile.j])
+
+        # Check bottom
+        if tile.i < settings.BOARD_HEIGHT - 1:
+            bottom = min(settings.BOARD_HEIGHT - 1, tile.i + 2)
+            for i in range(tile.i + 1, bottom + 1):
+                if self.tiles[i][tile.j].color != color or self.tiles[i][tile.j] == self.tile:
+                    break
+                v_match.append(self.tiles[i][tile.j])
+
+        if len(v_match) >= 2:       
+            return True  
+        return False  
+    
+    def there_is_movement(self) -> bool:
+    
+        for i in range(settings.BOARD_HEIGHT):
+            for j in range(settings.BOARD_WIDTH):
+                color = self.tiles[i][j].color
+                self.tile = self.tiles[i][j]
+                if self.tiles[i][j].powerup_4 or self.tiles[i][j].powerup_5:
+                    return True 
+                if( self.movement(self.tiles[i][ min( 7, j + 1) ], color)): # right
+                    return True 
+                if( self.movement(self.tiles[i][ max( 0, j - 1)], color)): # left 
+                    return True
+                if( self.movement(self.tiles[ min( 7, i + 1) ][j], color)): # top
+                    return True
+                if( self.movement(self.tiles[ max( 0, i - 1) ][j], color)): # bottom
+                    return True   
+                       
+        return False   
