@@ -51,9 +51,13 @@ TEXTURES = {
         BASE_DIR / "assets" / "textures" / "background.png"
     ),
     "tiles": pygame.image.load(BASE_DIR / "assets" / "textures" / "match3.png"),
+    "tiles_powerup_4": pygame.image.load(BASE_DIR / "assets" / "textures" / "match3_powerup_4.png"),
+    "tiles_powerup_5": pygame.image.load(BASE_DIR / "assets" / "textures" / "match3_powerup_5.png"),
 }
 
 FRAMES = {"tiles": generate_tile_frames(TEXTURES["tiles"])}
+FRAMES2 = {"tiles_powerup_4": generate_tile_frames(TEXTURES["tiles_powerup_4"])}
+FRAMES3 = {"tiles_powerup_5": generate_tile_frames(TEXTURES["tiles_powerup_5"])}
 
 pygame.mixer.init()
 
