@@ -36,9 +36,17 @@ class PlayState(BaseState):
 
         self.active = True
 
+        self.band = False
+
         self.timer = settings.LEVEL_TIME
 
         self.goal_score = self.level * 1.25 * 1000
+
+        self.alpha_transition = 0 
+
+        self.screen_alpha_surface = pygame.Surface(
+            (settings.VIRTUAL_WIDTH, settings.VIRTUAL_HEIGHT), pygame.SRCALPHA
+        )
 
         # A surface that supports alpha to highlight a selected tile
         self.tile_alpha_surface = pygame.Surface(
@@ -58,13 +66,18 @@ class PlayState(BaseState):
         )
 
         def decrement_timer():
-            self.timer -= 1
+            if not self.band:
+                self.timer -= 1
 
             # Play warning sound on timer if we get low
             if self.timer <= 5:
                 settings.SOUNDS["clock"].play()
 
         Timer.every(1, decrement_timer)
+
+    def Band(self) -> None:
+        self.band = False    
+        self.active = True
 
     def update(self, _: float) -> None:
         if self.timer <= 0:
@@ -76,6 +89,7 @@ class PlayState(BaseState):
             Timer.clear()
             settings.SOUNDS["next-level"].play()
             self.state_machine.change("begin", level=self.level + 1, score=self.score)
+
 
     def render(self, surface: pygame.Surface) -> None:
         self.board.render(surface)
@@ -122,6 +136,13 @@ class PlayState(BaseState):
             (99, 155, 255),
             shadowed=True,
         )
+        # Mis modificaciones 
+        pygame.draw.rect(
+            self.screen_alpha_surface,
+            (255, 255, 255, self.alpha_transition),
+            pygame.Rect(0, 0, settings.VIRTUAL_WIDTH, settings.VIRTUAL_HEIGHT),
+        )
+        surface.blit(self.screen_alpha_surface, (0, 0))
 
     def on_input(self, input_id: str, input_data: InputData) -> None:
         if not self.active:
@@ -142,25 +163,18 @@ class PlayState(BaseState):
                 else:
                     self.highlighted_i2 = i
                     self.highlighted_j2 = j
+
                     di = abs(self.highlighted_i2 - self.highlighted_i1)
                     dj = abs(self.highlighted_j2 - self.highlighted_j1)
 
                     if di <= 1 and dj <= 1 and di != dj:
                         self.active = False
-                        tile1 = self.board.tiles[self.highlighted_i1][
-                            self.highlighted_j1
-                        ]
-                        tile2 = self.board.tiles[self.highlighted_i2][
-                            self.highlighted_j2
-                        ]
+                        tile1 = self.board.tiles[self.highlighted_i1][self.highlighted_j1]
+                        tile2 = self.board.tiles[self.highlighted_i2][self.highlighted_j2]
 
                         def arrive():
-                            tile1 = self.board.tiles[self.highlighted_i1][
-                                self.highlighted_j1
-                            ]
-                            tile2 = self.board.tiles[self.highlighted_i2][
-                                self.highlighted_j2
-                            ]
+                            tile1 = self.board.tiles[self.highlighted_i1][self.highlighted_j1]
+                            tile2 = self.board.tiles[self.highlighted_i2][ self.highlighted_j2]
                             (
                                 self.board.tiles[tile1.i][tile1.j],
                                 self.board.tiles[tile2.i][tile2.j],
@@ -183,11 +197,51 @@ class PlayState(BaseState):
                                 (tile1, {"x": tile2.x, "y": tile2.y}),
                                 (tile2, {"x": tile1.x, "y": tile1.y}),
                             ],
-                            on_finish=arrive,
+                            on_finish=arrive
                         )
+                    elif self.highlighted_i1 == self.highlighted_i2 and self.highlighted_j1 == self.highlighted_j2:
+                       
+                        if self.board.tiles[self.highlighted_i1][self.highlighted_j1].powerup_4:
+                            self.active = False
+                            tile = self.board.tiles[self.highlighted_i1][self.highlighted_j1]
+                            self.board.Powerup_4(tile)
+                            falling_tiles = self.board.get_falling_tiles()
+                            
+                            Timer.tween(
+                            0.25,
+                                falling_tiles,
+                                on_finish=lambda: self.__calculate_matches(
+                                [item[0] for item in falling_tiles]
+                                ),
+                            )
 
+                        if self.board.tiles[self.highlighted_i1][self.highlighted_j1].powerup_5:
+                            self.active = False
+                            tile = self.board.tiles[self.highlighted_i1][self.highlighted_j1]
+                            self.board.Powerup_5(tile)
+                            falling_tiles = self.board.get_falling_tiles()
+                            
+                            Timer.tween(
+                                0.25,
+                                falling_tiles,
+                                on_finish=lambda: self.__calculate_matches(
+                                [item[0] for item in falling_tiles]
+                                ),
+                            )    
+
+                    if not self.board.there_is_movement():
+                        self.active = False
+                        self.band = True
+                        Timer.tween(
+                            2,
+                            [(self, {"alpha_transition": 255})],
+                            on_finish=lambda:(
+                            self.board._initialize_tiles(),
+                            Timer.tween(2, [ (self, {"alpha_transition": 0})],),
+                            self.Band() )
+                        )      
                     self.highlighted_tile = False
-
+        
     def __calculate_matches(self, tiles: List) -> None:
         matches = self.board.calculate_matches_for(tiles)
 
@@ -208,7 +262,9 @@ class PlayState(BaseState):
         Timer.tween(
             0.25,
             falling_tiles,
-            on_finish=lambda: self.__calculate_matches(
+            on_finish=lambda:self.__calculate_matches(
                 [item[0] for item in falling_tiles]
             ),
         )
+
+    
