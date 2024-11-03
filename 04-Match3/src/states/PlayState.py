@@ -36,12 +36,25 @@ class PlayState(BaseState):
         
         self.pressed = False
         
+        self.move = False
+
         self.dx = 0
         self.dy = 0
 
-        self.dir = None
+        self.dx2 = 0
+
+        self.diferencial = 0
+
+        self.tile_right = None
+        self.tile_left = None
+        self.tile_up = None
+        self.tile_down = None
+
         self.original_position1 = None
         self.original_position2 = None
+
+        self.swap_tile = False
+        self.tile2_swap = None
 
         self.active = True
 
@@ -137,8 +150,11 @@ class PlayState(BaseState):
             return
 
         if input_id == "click":
+            self.swap_tile = True
+            self.move = True
             if input_data.released:
                 self.pressed = False
+                self.swap_tile = False
                 tile1 = None
                 #update_tiles
             elif input_data.pressed:
@@ -149,7 +165,7 @@ class PlayState(BaseState):
                 j = (pos_x - self.board.x) // settings.TILE_SIZE
 
                 self.pressed = True
-
+                
                 if 0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH:
                     if not self.highlighted_tile:
                         self.highlighted_tile = True
@@ -160,15 +176,21 @@ class PlayState(BaseState):
                             ]
                         
                         self.original_position1 = (tile1.x, tile1.y)
-                        self.dir = (tile1.x, tile1.y)
 
                         self.dx = pos_x - tile1.x
                         self.dy = pos_y - tile1.y
+
+                        self.tile_right = self.board.tiles[i][j + 1]
+                        self.tile_left  = self.board.tiles[i][j - 1]
+                        self.tile_up = self.board.tiles[i - 1][j]
+
                     else:
                         self.highlighted_i2 = i
                         self.highlighted_j2 = j
                         di = abs(self.highlighted_i2 - self.highlighted_i1)
                         dj = abs(self.highlighted_j2 - self.highlighted_j1)
+
+                        self.pressed = False
 
                         if di <= 1 and dj <= 1 and di != dj:
                             self.active = False
@@ -178,6 +200,8 @@ class PlayState(BaseState):
                             tile2 = self.board.tiles[self.highlighted_i2][
                                 self.highlighted_j2
                             ]
+                            
+                            self.swap_tile_matriz = (self.highlighted_i2, self.highlighted_j2)
 
                             def arrive():
                                 tile1 = self.board.tiles[self.highlighted_i1][
@@ -218,24 +242,51 @@ class PlayState(BaseState):
             pos_x = pos_x * settings.VIRTUAL_WIDTH // settings.WINDOW_WIDTH
             pos_y = pos_y * settings.VIRTUAL_HEIGHT // settings.WINDOW_HEIGHT
             tile1 = self.board.tiles[self.highlighted_i1][self.highlighted_j1]
+            i = (pos_y - self.board.y) // settings.TILE_SIZE
+            j = (pos_x - self.board.x) // settings.TILE_SIZE
+
             
-            if (pos_x - self.dx) > self.original_position1[0]:
-                self.dir = True
-            elif (pos_x - self.dx) < self.original_position1[0]:
-                self.dir = False
-            else:
-                self.dir = None
+            match input_id:
+                    
+                case "move_right": 
+                    tile2 = self.board.tiles[i][j + 1]
+                case "move_left": 
+                    tile2 = self.board.tiles[i][j - 1]
+                case "move_up": 
+                    tile2 = self.board.tiles[i - 1][j]
+                case "move_down": 
+                    tile2 = self.board.tiles[i + 1][j]  
 
-            if self.dir:
-                tile1.x = pos_x - self.dx
-                tile1.y = self.original_position1[1]
-            elif not self.dir:
-                tile1.x = self.original_position1[0]
-                tile1.y = pos_y - self.dy
+            self.original_position2 = (tile2.x, tile2.y)
+            pos2_y = (tile2.i * settings.TILE_SIZE) + self.board.y
+            pos2_x = (tile2.j * settings.TILE_SIZE) + self.board.x
 
-            # tile1.x = pos_x - self.dx
-            # tile1.y = pos_y - self.dy
-        
+            self.dx2 = pos2_x - tile2.x
+            dy2 = pos2_y - tile2.y
+
+
+            # if self.move:
+            #     self.move = False
+            #     if input_id == "move_right" or input_id == "move_left":
+            #         self.dir = True    
+            #     elif input_id == "move_down" or input_id == "move_up":
+            #         self.dir = False
+            #     else:
+            #         self.dir = None
+
+            tile1.x = pos_x - self.dx
+            tile1.y = self.original_position1[1]
+            tile2.x = pos2_x + self.dx2
+            tile2.y = self.original_position2[1]
+            
+            # if not self.dir and (0 <= i < settings.BOARD_HEIGHT and 0 <= j < settings.BOARD_WIDTH):
+            #     if tile1.y > self.tile_up.y:
+            #         tile1.x = self.original_position1[0]
+            #         tile1.y = pos_y - self.dy
+        else: 
+            self.pressed = False
+                
+
 
 
 
